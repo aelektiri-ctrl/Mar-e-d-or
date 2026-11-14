@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#05080E">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Marée Pro</title>
+<title>Marée d'Or</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -136,7 +136,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 /* Bandeau animé */
 .hero{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);margin-bottom:14px;height:210px;background:#060A12}
 .hero svg.sea{position:absolute;inset:0;width:100%;height:100%}
-.hero .title{position:absolute;left:16px;right:16px;bottom:14px;z-index:2}
+.hero .title{position:absolute;left:16px;top:14px;right:120px;z-index:2}
 .hero .title .n{font-family:var(--serif);font-size:30px;font-weight:600;color:var(--gold2);line-height:1;letter-spacing:.5px;text-shadow:0 2px 12px rgba(0,0,0,.6)}
 .hero .title .s{font-size:10.5px;letter-spacing:2.2px;text-transform:uppercase;color:#B9C3D2;margin-top:6px}
 .hero .date{position:absolute;top:12px;right:14px;font-size:11px;color:#B9C3D2;letter-spacing:.6px;z-index:2}
@@ -169,6 +169,20 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .mlabels{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;font-size:8.5px;color:var(--muted);text-align:center;margin-top:2px}
 .ornament{display:flex;align-items:center;gap:10px;color:var(--gold3);font-size:10px;letter-spacing:2px;text-transform:uppercase;margin:16px 0 10px}
 .ornament::before,.ornament::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold3),transparent)}
+.mapbox{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#060C15}
+.map{display:block;width:100%;height:auto;touch-action:manipulation}
+.map .land{fill:#1F3249;stroke:#D4AF5A;stroke-width:.9;stroke-linejoin:round}
+.map .land2{fill:#172536;stroke:#7A6A3E;stroke-width:.6}
+.map .grid{stroke:#D4AF5A;stroke-opacity:.07;stroke-width:.6}
+.map .zone{fill:rgba(20,184,138,.16);stroke:#14B88A;stroke-width:1;stroke-dasharray:3 2}
+.map .zone.sel{fill:rgba(212,175,90,.22);stroke:#F0D48A;stroke-width:1.6;stroke-dasharray:none}
+.map .zl{fill:#CFE9DF;font-family:Inter,sans-serif;font-weight:600;text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:#060C15;stroke-width:2.4px}
+.map .cd{fill:#F0D48A;stroke:#060C15;stroke-width:.8}
+.map .cl{fill:#E6D6AE;font-family:Inter,sans-serif;paint-order:stroke;stroke:#060C15;stroke-width:2px}
+.map .hv{fill:#14B88A;font-family:Inter,sans-serif;font-weight:700;paint-order:stroke;stroke:#060C15;stroke-width:2px}
+button.tag{font:inherit;font-size:11px;font-weight:600;cursor:pointer;padding:4px 10px}
+[data-href],[data-act]{cursor:pointer}
+tr[data-act]:active td{background:rgba(212,175,90,.06)}
 </style>
 </head>
 <body>
@@ -333,7 +347,7 @@ const CITIES={'Le Havre':[49.494,0.107],'Fécamp':[49.757,0.374],'Dieppe':[49.92
 const CNY={2026:'2026-02-17',2027:'2027-02-06',2028:'2028-01-26',2029:'2029-02-13',2030:'2030-02-03'};
 
 /* ============ État & stockage ============ */
-const DEF_SETTINGS={appName:'Marée Pro',raison:'',forme:'',siret:'',tva:'',naf:'',adresse:'',cp:'',ville:'Le Havre',email:'',tel:'',iban:'',bic:'',logo:'',codeHash:'',defaultCriee:'fecamp',refreshMin:5,serverUrl:'',serverKey:'',
+const DEF_SETTINGS={appName:"Marée d'Or",raison:'',forme:'',siret:'',tva:'',naf:'',adresse:'',cp:'',ville:'Le Havre',email:'',tel:'',iban:'',bic:'',logo:'',codeHash:'',defaultCriee:'fecamp',refreshMin:5,serverUrl:'',serverKey:'',
  origin:'Le Havre',fuelPrice:1.75,conso:11,peageKm:0.12,autorouteShare:60,driverRate:28,speed:72,loadMin:30,frigoH:3.5,vehicleKm:0.18,routeFactor:1.28,
  usdEur:0.90,cnyEur:0.125,duty:3,vatImport:20,insurance:0.5,customsFee:150,minMargin:10,payDays:30,vatFish:5.5,resaleCoef:1.7,transportKg:0.45,calVol:50,targetPct:8,maxPct:10,devisValid:15,nextD:{},nextF:{}};
 const S={sourcing:{},settings:{...DEF_SETTINGS},criees:{},clients:[],prospects:[],orders:[],docs:[],imports:[],disruptions:[],watch:[],carriers:[],consoPrices:{},results:{}};
@@ -341,7 +355,7 @@ const KEYS=['settings','criees','clients','prospects','orders','docs','imports',
 let DB=null,UID=null,OWNER=false,MODE='local',DL=null;
 const lsGet=k=>{try{const v=localStorage.getItem('mp_'+k);return v==null?undefined:JSON.parse(v)}catch(e){return undefined}};
 const lsSet=(k,v)=>{try{localStorage.setItem('mp_'+k,JSON.stringify(v))}catch(e){}};
-const merge=(k,v)=>k==='settings'?{...DEF_SETTINGS,...v}:v;
+const merge=(k,v)=>{if(k!=='settings')return v;const o={...DEF_SETTINGS,...v};if(!o.appName||o.appName==='Marée Pro')o.appName=DEF_SETTINGS.appName;return o};
 async function dbRead(ref){try{const s=await ref.get();if(!s||s.exists===false)return undefined;let d=typeof s.data==='function'?s.data():('data' in s?s.data:s);if(d&&typeof d.json==='string')return JSON.parse(d.json)}catch(e){console.warn('read',e)}return undefined}
 const saveT={},saving={},dirty={};
 function save(k){lsSet(k,S[k]);if(!DB)return;clearTimeout(saveT[k]);saveT[k]=setTimeout(()=>flush(k),500)}
@@ -438,7 +452,7 @@ function transportCalc(p){
 }
 const hhmm=h=>{const m=Math.round(h*60);return Math.floor(m/60)+' h '+String(m%60).padStart(2,'0')};
 function docTotals(lines){const by={};let ht=0;for(const l of lines||[]){const t=num(l.qty)*num(l.pu);ht+=t;const r=num(l.tva);by[r]=(by[r]||0)+t}let tva=0;const rates=Object.keys(by).map(r=>{const v=by[r]*num(r)/100;tva+=v;return{rate:+r,base:by[r],tva:v}});return{ht,tva,ttc:ht+tva,rates}}
-function nextNum(type){const y=new Date().getFullYear();const k=type==='facture'?'nextF':'nextD';const st=S.settings;st[k]=st[k]||{};const n=(st[k][y]||0)+1;st[k][y]=n;save('settings');return (type==='facture'?'F':'D')+y+'-'+String(n).padStart(4,'0')}
+function nextNum(type){const y=new Date().getFullYear();const k=type==='facture'?'nextF':'nextD';const st=S.settings;st[k]=st[k]||{};const pre=(type==='facture'?'F':'D')+y+'-';const used=S.docs.filter(d=>(d.num||'').startsWith(pre)).map(d=>parseInt(d.num.slice(pre.length))||0);const n=Math.max(st[k][y]||0,...used,0)+1;st[k][y]=n;save('settings');return (type==='facture'?'F':'D')+y+'-'+String(n).padStart(4,'0')}
 function importCalc(p){
  const st=S.settings;const qty=Math.max(1,num(p.qty));const cur=p.cur||'USD';const rate=cur==='EUR'?1:cur==='CNY'?num(p.cnyEur||st.cnyEur):num(p.usdEur||st.usdEur);
  const goods=num(p.unit)*qty*rate+num(p.tooling)*rate;
@@ -489,11 +503,11 @@ const ADMIN_PAGES=[
 function header(){
  const st=S.settings;const logo=st.logo?`<img src="${esc(st.logo)}" alt="">`:LOGO_SVG;
  const isAdm=view.startsWith('adm')||view==='admin';
- $('#hdr').innerHTML=`<div class="logo">${logo}</div><h1>${esc(st.appName||'Marée Pro')}<div class="sub">${isAdm&&ADMIN?'Espace administrateur':'Criées · Négoce · Marée'}</div></h1><span class="sync">${MODE==='cloud'?'Synchronisé':'Local'}</span>${ADMIN&&isAdm?'<button data-act="logout">Quitter</button>':''}`;
+ $('#hdr').innerHTML=`<div class="logo">${logo}</div><h1>${esc(st.appName||"Marée d'Or")}<div class="sub">${isAdm&&ADMIN?'Espace administrateur':'Criées · Négoce · Marée'}</div></h1><span class="sync">${MODE==='cloud'?'Synchronisé':'Local'}</span>${ADMIN&&isAdm?'<button data-act="logout">Quitter</button>':''}`;
 }
 function tabs(){
  const t=[['accueil','Accueil',I.home],['resultats','Criées',I.fish],['alertes','Alertes',I.bell],['compte','Compte',I.user],['admin','Admin',ADMIN?I.grid:I.lock]];
- const cur=view.startsWith('adm')?'admin':view==='guide'?'compte':view;
+ const cur=view.startsWith('adm')?'admin':['guide'].includes(view)?'compte':['especes','carte'].includes(view)?'accueil':view;
  $('#tabs').innerHTML=t.map(([h,l,ic])=>`<a href="#${h}" class="${cur===h?'on':''}">${ic}${l}</a>`).join('');
 }
 function render(){
@@ -503,6 +517,8 @@ function render(){
   if(h==='accueil')html=vHome();
   else if(h==='compte')html=vAccount();
   else if(h==='guide')html=vGuide();
+  else if(h==='especes')html=vSpecies();
+  else if(h==='carte')html=vMap();
   else if(h==='resultats')html=vResults();
   else if(h==='alertes')html=vAlerts();
   else if(h==='admin'||h.startsWith('adm')){
@@ -529,11 +545,11 @@ function vResults(){
  return `<div class="card"><label>Criée</label>${crieeSelect('criee',c.id)}
  <div class="row small muted" style="margin-top:8px"><span class="dot ${live?'live':''}"></span>${live?'Connectée – actualisation toutes les '+esc(S.settings.refreshMin)+' min':'Source non connectée'}<span class="grow"></span>${R?'Mise à jour '+frDT(R.updated)+' · '+esc(R.source):''}</div></div>
  <div class="seg" style="margin-bottom:12px"><button data-act="phase" data-v="avant" class="${phase==='avant'?'on':''}">Avant vente · apports</button><button data-act="phase" data-v="apres" class="${phase==='apres'?'on':''}">Après vente · prix</button></div>
- ${rows.length?`<div class="kpis"><div class="kpi"><div class="l">Lignes</div><div class="v">${list.length}</div></div><div class="kpi"><div class="l">Volume</div><div class="v">${fmt(totKg/1000,2)} t</div></div>${phase==='apres'?`<div class="kpi"><div class="l">Valeur</div><div class="v">${eur(totV)}</div></div><div class="kpi"><div class="l">Prix moyen</div><div class="v">${totKg?fmt(totV/totKg)+' €':'—'}</div><div class="d">€/kg pondéré</div></div>`:''}</div>
- <div class="card"><div class="row" style="margin-bottom:8px"><input class="grow" placeholder="Filtrer une espèce…" value="${esc(sub.filter||'')}" data-input="filter">${live||cf.apiUrl||S.settings.serverUrl?`<button class="btn sec sm" data-act="refresh" data-id="${c.id}">Actualiser</button>`:''}</div>
+ ${rows.length?`<div class="kpis"><div class="kpi" data-act="scrollto" data-id="restable"><div class="l">Lignes</div><div class="v">${list.length}</div></div><div class="kpi" data-act="scrollto" data-id="restable"><div class="l">Volume</div><div class="v">${fmt(totKg/1000,2)} t</div></div>${phase==='apres'?`<div class="kpi" data-act="scrollto" data-id="restable"><div class="l">Valeur</div><div class="v">${eur(totV)}</div></div><div class="kpi" data-act="scrollto" data-id="restable"><div class="l">Prix moyen</div><div class="v">${totKg?fmt(totV/totKg)+' €':'—'}</div><div class="d">€/kg pondéré</div></div>`:''}</div>
+ <div class="card" id="restable"><div class="row" style="margin-bottom:8px"><input class="grow" placeholder="Filtrer une espèce…" value="${esc(sub.filter||'')}" data-input="filter">${live||cf.apiUrl||S.settings.serverUrl?`<button class="btn sec sm" data-act="refresh" data-id="${c.id}">Actualiser</button>`:''}</div>
  <div class="tw"><table><thead><tr><th>Espèce</th><th>Cal.</th><th>Qual.</th><th class="n">Kg</th>${phase==='apres'?'<th class="n">€/kg</th><th class="n">Var. J-1</th>':'<th>Bateau</th>'}</tr></thead><tbody>
  ${list.map(r=>{let v='';if(phase==='apres'){const p=prevPrice(R,r.espece);if(p){const d=(r.prix-p)/p*100;v=`<span class="${d>=0?'up':'down'}">${d>=0?'▲':'▼'} ${fmt(Math.abs(d),1)} %</span>`}else v='<span class="muted">—</span>'}
-  return `<tr><td><b>${esc(r.espece)}</b></td><td>${esc(r.calibre)}</td><td>${esc(r.qualite)}</td><td class="n">${fmt(r.kg,0)}</td>${phase==='apres'?`<td class="n"><b>${fmt(r.prix)}</b>${r.min||r.max?`<div class="small muted">${fmt(r.min)}–${fmt(r.max)}</div>`:''}</td><td class="n">${v}</td>`:`<td>${esc(r.bateau)}</td>`}</tr>`}).join('')}
+  return `<tr data-act="spl" data-v="${esc(r.espece)}"><td><b>${esc(r.espece)}</b></td><td>${esc(r.calibre)}</td><td>${esc(r.qualite)}</td><td class="n">${fmt(r.kg,0)}</td>${phase==='apres'?`<td class="n"><b>${fmt(r.prix)}</b>${r.min||r.max?`<div class="small muted">${fmt(r.min)}–${fmt(r.max)}</div>`:''}</td><td class="n">${v}</td>`:`<td>${esc(r.bateau)}</td>`}</tr>`}).join('')}
  </tbody></table></div></div>`
  :`<div class="card empty"><b>Aucune donnée pour ${esc(c.nom)} (${phase==='avant'?'apports':'résultats'})</b>Les données s'afficheront dès que l'administrateur aura branché l'API de la criée, un serveur relais, ou importé le fichier du jour.${ADMIN?`<div style="margin-top:12px"><a class="btn sm" href="#adm-criees" data-act="opencriee" data-id="${c.id}">Configurer cette criée</a></div>`:''}</div>`}
  ${c.id==='fecamp'||cid==='fecamp'?`<p class="small muted">Le Havre n'a plus de halle à marée déclarée : la criée la plus proche est Fécamp – Le Tréport.</p>`:''}`;
@@ -549,10 +565,10 @@ function evalWatch(w){
 function vAlerts(){
  const W=S.watch;
  return `<h2>Alertes</h2>
- <div class="card"><h3>Nouvelle alerte</h3><form data-form="watch"><div class="grid2"><div class="f"><label>Espèce</label><input name="espece" required placeholder="ex. Sole"></div><div class="f"><label>Type</label><select name="kind"><option value="prix">Seuil de prix</option><option value="apport">Apport annoncé</option></select></div></div>
+ <div class="card"><h3>Nouvelle alerte</h3><form data-form="watch"><div class="grid2"><div class="f"><label>Espèce</label><input name="espece" required placeholder="ex. Sole" value="${esc(sub.alertSp||'')}" list="splist"><datalist id="splist">${SPECIES.map(s=>`<option value="${esc(s.n)}">`).join('')}</datalist></div><div class="f"><label>Type</label><select name="kind"><option value="prix">Seuil de prix</option><option value="apport">Apport annoncé</option></select></div></div>
  <div class="grid3"><div class="f"><label>Condition</label><select name="sens"><option value="<=">Prix ≤</option><option value=">=">Prix ≥</option></select></div><div class="f"><label>Seuil €/kg</label><input name="seuil" inputmode="decimal" placeholder="12,50"></div><div class="f"><label>Criée</label>${crieeSelect('criee','',true)}</div></div>
  <button class="btn block">Ajouter l'alerte</button></form></div>
- <div class="card"><h3>Mes alertes</h3>${W.length?`<div class="list">${W.map(w=>{const hits=evalWatch(w);return `<div class="it"><div class="grow"><div class="t">${esc(w.espece)} ${w.kind==='apport'?'<span class="tag">apport</span>':`<span class="tag">${esc(w.sens)} ${fmt(num(w.seuil))} €</span>`}</div><div class="small muted">${w.criee?esc(criee(w.criee)?.nom):'Toutes les criées'}</div>${hits.length?hits.slice(0,4).map(x=>`<div class="small"><span class="tag ok">Déclenchée</span> ${esc(criee(x.id)?.nom)} – ${esc(x.txt)}</div>`).join(''):'<div class="small muted">Pas déclenchée</div>'}</div><button class="btn danger sm" data-act="delwatch" data-id="${w.id}">Suppr.</button></div>`}).join('')}</div>`:'<div class="empty">Aucune alerte. Ajoutez une espèce et un seuil ci-dessus.</div>'}</div>
+ <div class="card"><h3>Mes alertes</h3>${W.length?`<div class="list">${W.map(w=>{const hits=evalWatch(w);return `<div class="it"><div class="grow"><div class="t">${esc(w.espece)} ${w.kind==='apport'?'<span class="tag">apport</span>':`<span class="tag">${esc(w.sens)} ${fmt(num(w.seuil))} €</span>`}</div><div class="small muted">${w.criee?esc(criee(w.criee)?.nom):'Toutes les criées'}</div>${hits.length?hits.slice(0,4).map(x=>`<div class="small"><span class="tag ok">Déclenchée</span> ${esc(criee(x.id)?.nom)} – ${esc(x.txt)}</div>`).join(''):'<div class="small muted">Pas déclenchée</div>'}</div><button class="btn sec sm" data-act="watchgo" data-id="${w.id}">Voir</button><button class="btn danger sm" data-act="delwatch" data-id="${w.id}">Suppr.</button></div>`}).join('')}</div>`:'<div class="empty">Aucune alerte. Ajoutez une espèce et un seuil ci-dessus.</div>'}</div>
  <p class="small muted">Les alertes sont vérifiées à chaque actualisation des données, pendant que l'application est ouverte.</p>`;
 }
 /* ---- Admin : connexion & accueil ---- */
@@ -566,14 +582,14 @@ function vAdminHome(){
  const missing=[];const st=S.settings;if(!st.siret)missing.push('SIRET');if(!st.raison)missing.push('raison sociale');if(!st.adresse)missing.push('adresse');
  return `${usingDefaultCode()?`<div class="banner warn"><b>Changez le code d'accès 12345.</b> <a href="#adm-entreprise">Le modifier maintenant</a></div>`:''}
  ${missing.length?`<div class="banner info">Pour émettre devis et factures, complétez : ${missing.join(', ')}. <a href="#adm-entreprise">Compléter</a></div>`:''}
- <div class="kpis"><div class="kpi"><div class="l">CA du mois (HT)</div><div class="v">${eur(caM)}</div></div><div class="kpi"><div class="l">À encaisser (TTC)</div><div class="v">${eur(unpaid)}</div></div><div class="kpi"><div class="l">Commandes en cours</div><div class="v">${open}</div></div><div class="kpi"><div class="l">Relances du jour</div><div class="v">${rel}</div></div></div>
+ <div class="kpis"><div class="kpi" data-href="#adm-ca"><div class="l">CA du mois (HT)</div><div class="v">${eur(caM)}</div></div><div class="kpi" data-href="#adm-devis"><div class="l">À encaisser (TTC)</div><div class="v">${eur(unpaid)}</div></div><div class="kpi" data-href="#adm-commandes"><div class="l">Commandes en cours</div><div class="v">${open}</div></div><div class="kpi" data-href="#adm-prospection"><div class="l">Relances du jour</div><div class="v">${rel}</div></div></div>
  <div class="tiles">${ADMIN_PAGES.map(([h,t,s,ic])=>`<a class="tile" href="#${h}"><div class="ic">${I[ic]}</div><b>${t}</b><span>${s}</span></a>`).join('')}</div>`;
 }
 /* ---- Entreprise ---- */
 function vCompany(){
  const s=S.settings;const fld=(n,l,t='text',ph='')=>`<div class="f"><label>${l}</label><input name="${n}" type="${t}" value="${esc(s[n])}" placeholder="${esc(ph)}"></div>`;
  return back()+`<h2>Entreprise & application</h2>
- <form data-form="company"><div class="card"><h3>Application</h3>${fld('appName',"Nom de l'application",'text','Marée Pro')}<div class="row" style="margin:-4px 0 12px"><span class="small muted">Propositions :</span>${PROPOSED_NAMES.map(n=>`<button type="button" class="btn sec sm" data-act="setname" data-v="${esc(n)}">${esc(n)}</button>`).join('')}</div>
+ <form data-form="company"><div class="card"><h3>Application</h3>${fld('appName',"Nom de l'application",'text',"Marée d'Or")}<div class="row" style="margin:-4px 0 12px"><span class="small muted">Propositions :</span>${PROPOSED_NAMES.map(n=>`<button type="button" class="btn sec sm" data-act="setname" data-v="${esc(n)}">${esc(n)}</button>`).join('')}</div>
  <div class="row"><div style="width:64px;height:64px;border:1px solid var(--line);border-radius:12px;overflow:hidden">${s.logo?`<img src="${esc(s.logo)}" style="width:100%;height:100%;object-fit:contain">`:LOGO_SVG}</div><div class="grow"><label>Logo (PNG, JPG ou SVG)</label><input type="file" accept="image/*" data-file="logo"></div></div>${s.logo?'<button type="button" class="btn sec sm" style="margin-top:8px" data-act="resetlogo">Revenir au logo par défaut</button>':''}</div>
  <div class="card"><h3>Société</h3>${fld('raison','Raison sociale')}<div class="grid2">${fld('forme','Forme juridique','text','SAS, SARL…')}${fld('siret','N° SIRET','text','14 chiffres')}</div><div class="grid2">${fld('tva','N° TVA intracommunautaire','text','FR…')}${fld('naf','Code APE / NAF')}</div>${fld('adresse','Adresse')}<div class="grid2">${fld('cp','Code postal')}${fld('ville','Ville')}</div><div class="grid2">${fld('email','E-mail','email')}${fld('tel','Téléphone','tel')}</div><div class="grid2">${fld('iban','IBAN')}${fld('bic','BIC')}</div>
  <div class="grid3">${fld('vatFish','TVA produits de la mer %','text')}${fld('payDays','Délai de paiement (jours)')}${fld('devisValid','Validité devis (jours)')}</div></div>
@@ -739,7 +755,7 @@ function vCA(){
  const byP={};fac.forEach(d=>(d.lines||[]).forEach(l=>{if(!/transport/i.test(l.desc)){const k=l.desc||'—';const o=byP[k]||(byP[k]={v:0,q:0});o.v+=l.qty*l.pu;if((l.unit||'').toLowerCase()==='kg')o.q+=l.qty}}));const topP=Object.entries(byP).sort((a,b)=>b[1].v-a[1].v).slice(0,8);
  const mx=Math.max(1,...byM);const W=600,H=180,bw=W/12;
  const chart=`<svg class="chart" viewBox="0 0 ${W} ${H+24}" role="img" aria-label="CA mensuel">${byM.map((v,i)=>{const h=v/mx*(H-20);return `<rect x="${i*bw+6}" y="${H-h}" width="${bw-12}" height="${Math.max(h,1)}" rx="3" fill="${i===11?'#14B88A':'#C9A24A'}" fill-opacity="${i===11?1:.75}"><title>${months[i]} : ${eur(v)}</title></rect><text x="${i*bw+bw/2}" y="${H+16}" font-size="11" text-anchor="middle" fill="#5B6B7B">${months[i].slice(5)}</text>`}).join('')}<line x1="0" y1="${H}" x2="${W}" y2="${H}" stroke="#1E2A3B"/></svg>`;
- return back()+`<h2>Chiffre d'affaires</h2><div class="kpis"><div class="kpi"><div class="l">CA ${y} HT</div><div class="v">${eur(caY)}</div></div><div class="kpi"><div class="l">Mois en cours HT</div><div class="v">${eur(byM[11])}</div></div><div class="kpi"><div class="l">Encaissé TTC</div><div class="v">${eur(paid)}</div></div><div class="kpi"><div class="l">À encaisser TTC</div><div class="v">${eur(due)}</div></div></div>
+ return back()+`<h2>Chiffre d'affaires</h2><div class="kpis"><div class="kpi" data-href="#adm-devis"><div class="l">CA ${y} HT</div><div class="v">${eur(caY)}</div></div><div class="kpi" data-href="#adm-devis"><div class="l">Mois en cours HT</div><div class="v">${eur(byM[11])}</div></div><div class="kpi" data-href="#adm-devis"><div class="l">Encaissé TTC</div><div class="v">${eur(paid)}</div></div><div class="kpi" data-href="#adm-devis"><div class="l">À encaisser TTC</div><div class="v">${eur(due)}</div></div></div>
  <div class="card"><h3>CA HT des 12 derniers mois</h3>${chart}</div>
  <div class="card"><h3>Meilleurs clients</h3>${topC.length?topC.map(([id,v])=>`<div class="kv"><span>${esc(clientName(id))}</span><b>${eur(v)}</b></div>`).join(''):'<p class="muted small">Aucune facture.</p>'}</div>
  <div class="card"><h3>Ventes par produit</h3>${topP.length?topP.map(([k,o])=>`<div class="kv"><span>${esc(k)}${o.q?` <span class="muted small">${fmt(o.q,0)} kg</span>`:''}</span><b>${eur(o.v)}</b></div>`).join(''):'<p class="muted small">Aucune vente.</p>'}</div>
@@ -765,8 +781,8 @@ function liveShip(){
  const [h,m]=(p.dep||'05:30').split(':').map(Number);const oneway=r.km/num(p.speed||S.settings.speed)+num(p.loadMin||S.settings.loadMin)/60;const arr=new Date();arr.setHours(h,m+Math.round(oneway*60),0,0);
  const cmp=S.carriers.filter(c=>num(c.eurKm)||num(c.forfait)).map(c=>({n:c.nom,v:num(c.forfait)||num(c.eurKm)*r.km}));
  const best=[{n:'Véhicule propre',v:r.total},...cmp].sort((a,b)=>a.v-b.v)[0];
- $('#shipout').innerHTML=`<h3>Résultat</h3><div class="kpis"><div class="kpi"><div class="l">Distance</div><div class="v">${fmt(r.km,0)} km</div><div class="d">${p.ar?'×2 aller-retour = '+fmt(r.dist,0)+' km':'aller simple'}</div></div><div class="kpi"><div class="l">Temps</div><div class="v">${hhmm(oneway)}</div><div class="d">arrivée vers ${arr.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</div></div><div class="kpi"><div class="l">Coût total HT</div><div class="v">${eur(r.total)}</div></div><div class="kpi"><div class="l">Coût / kg</div><div class="v">${r.perKg?fmt(r.perKg)+' €':'—'}</div></div></div>
- <div class="kv"><span>Gazole (${fmt(r.liters,1)} L)</span><b>${eur(r.fuel)}</b></div><div class="kv"><span>Péages estimés</span><b>${eur(r.tolls)}</b></div><div class="kv"><span>Chauffeur (${hhmm(r.hours)})</span><b>${eur(r.driver)}</b></div><div class="kv"><span>Groupe froid</span><b>${eur(r.frigo)}</b></div><div class="kv"><span>Usure véhicule</span><b>${eur(r.wear)}</b></div><div class="kv tot"><span>Total HT</span><b>${eur(r.total)}</b></div>
+ $('#shipout').innerHTML=`<h3>Résultat</h3><div class="kpis"><div class="kpi" data-act="scrollto" data-id="shipdetail"><div class="l">Distance</div><div class="v">${fmt(r.km,0)} km</div><div class="d">${p.ar?'×2 aller-retour = '+fmt(r.dist,0)+' km':'aller simple'}</div></div><div class="kpi" data-act="scrollto" data-id="shipdetail"><div class="l">Temps</div><div class="v">${hhmm(oneway)}</div><div class="d">arrivée vers ${arr.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</div></div><div class="kpi" data-act="scrollto" data-id="shipdetail"><div class="l">Coût total HT</div><div class="v">${eur(r.total)}</div></div><div class="kpi" data-act="scrollto" data-id="shipdetail"><div class="l">Coût / kg</div><div class="v">${r.perKg?fmt(r.perKg)+' €':'—'}</div></div></div>
+ <div id="shipdetail"></div><div class="kv"><span>Gazole (${fmt(r.liters,1)} L)</span><b>${eur(r.fuel)}</b></div><div class="kv"><span>Péages estimés</span><b>${eur(r.tolls)}</b></div><div class="kv"><span>Chauffeur (${hhmm(r.hours)})</span><b>${eur(r.driver)}</b></div><div class="kv"><span>Groupe froid</span><b>${eur(r.frigo)}</b></div><div class="kv"><span>Usure véhicule</span><b>${eur(r.wear)}</b></div><div class="kv tot"><span>Total HT</span><b>${eur(r.total)}</b></div>
  ${cmp.length?`<div class="banner ok small" style="margin-top:10px">Option la moins chère : <b>${esc(best.n)}</b> (${eur(best.v)})</div>`:''}
  <p class="small muted">Distance estimée à vol d'oiseau × ${fmt(num(S.settings.routeFactor),2)} (coefficient routier). Saisissez les km réels pour un devis exact.</p>
  ${S.orders.length?`<div class="row"><select id="shipOrder" class="grow">${S.orders.filter(o=>o.statut!=='annulée').map(o=>opt(o.id,o.num+' · '+clientName(o.clientId),'')).join('')}</select><button class="btn sm" data-act="shiptoorder">Affecter à la commande</button></div>`:''}`;
@@ -853,12 +869,12 @@ function vSettings(){
  <div class="card"><h3>Import par défaut</h3><div class="grid3">${f('usdEur','1 USD en €')}${f('cnyEur','1 CNY en €')}${f('duty','Droits %')}${f('insurance','Assurance %')}${f('customsFee','Dédouanement €')}${f('minMargin','Économie mini %')}</div><p class="small muted">Mettez à jour les taux de change régulièrement.</p></div>
  <button class="btn block">Enregistrer</button></form>
  <div class="card" style="margin-top:12px"><h3>Installer sur vos téléphones</h3><ol class="small" style="padding-left:18px;margin:0"><li>Ouvrez le lien de l'application dans Chrome, connecté à votre compte Claude.</li><li>Menu ⋮ → <b>Ajouter à l'écran d'accueil</b> (ou « Installer l'application »).</li><li>Répétez sur chaque téléphone : les données sont synchronisées entre vos appareils.</li></ol><p class="small muted">Mode actuel : ${MODE==='cloud'?'synchronisé sur votre compte':'stockage local à cet appareil – exportez une sauvegarde régulièrement'}.</p></div>
- <div class="card"><h3>Sauvegarde</h3><div class="row"><button class="btn sec sm" data-act="export">Exporter (copier)</button>${DL?'<button class="btn sec sm" data-act="exportfile">Télécharger le fichier</button>':''}<button class="btn sec sm" data-act="importjson">Restaurer</button></div></div>
+ <div class="card"><h3>Sauvegarde</h3><div class="row"><button class="btn sec sm" data-act="export">Exporter (copier)</button><button class="btn sec sm" data-act="exportfile">Télécharger le fichier</button><button class="btn sec sm" data-act="importjson">Restaurer</button></div></div>
  <div class="card"><h3>Zone sensible</h3><button class="btn danger sm" data-act="wipe">Effacer toutes les données de gestion</button></div>`;
 }
 
 /* ============ V2 : données ============ */
-const PROPOSED_NAMES=['Maréor','Haute Marée',"Ligne d'Or"];
+const PROPOSED_NAMES=["Marée d'Or",'Maréor','Haute Marée',"Ligne d'Or"];
 const MONTHS=['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'];
 const MONTHS_L=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 // Prix moyens en halles à marée 2024 : FranceAgriMer / VISIOMer (bilan publié en mai 2025). Saisons : indicatives.
@@ -981,12 +997,12 @@ function vHome(){
  const top=R?[...(R.apres||[])].filter(r=>r.prix).sort((a,b)=>b.prix*b.kg-a.prix*a.kg).slice(0,6):[];
  const hits=S.watch.reduce((n,w)=>n+(evalWatch(w).length?1:0),0);
  const connected=Object.values(S.criees).filter(x=>x.apiUrl).length+(st.serverUrl?1:0);
- return `<div class="hero">${heroSVG()}<div class="date">${now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}</div><div class="title"><div class="n">${esc(st.appName||'Marée Pro')}</div><div class="s">Criées · Négoce · Produits de la mer</div></div></div>
- <div class="kpis"><div class="kpi"><div class="l">Criée suivie</div><div class="v" style="font-size:16px">${esc(c.nom)}</div><div class="d">${R?'MAJ '+frDT(R.updated):'Pas encore de données'}</div></div><div class="kpi"><div class="l">Alertes déclenchées</div><div class="v">${hits}</div><div class="d">sur ${S.watch.length} suivie(s)</div></div><div class="kpi"><div class="l">En saison</div><div class="v">${season.length}</div><div class="d">espèces en ${MONTHS_L[m-1]}</div></div><div class="kpi"><div class="l">Sources connectées</div><div class="v">${connected}</div><div class="d">API / serveur</div></div></div>
- <div class="card"><h3>En saison ce mois-ci</h3><div class="row">${season.map(s=>`<span class="tag acc">${esc(s.n)}</span>`).join('')}</div>${closed.length?`<p class="small muted" style="margin:10px 0 0">Fermé ce mois-ci : ${closed.map(s=>esc(s.n)).join(', ')}.</p>`:''}</div>
+ return `<div class="hero">${heroSVG()}<div class="date">${now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}</div><div class="title"><div class="n">${esc(st.appName||"Marée d'Or")}</div><div class="s">Criées · Négoce · Produits de la mer</div></div></div>
+ <div class="kpis"><div class="kpi" data-href="#resultats"><div class="l">Criée suivie</div><div class="v" style="font-size:16px">${esc(c.nom)}</div><div class="d">${R?'MAJ '+frDT(R.updated):'Pas encore de données'}</div></div><div class="kpi" data-href="#alertes"><div class="l">Alertes déclenchées</div><div class="v">${hits}</div><div class="d">sur ${S.watch.length} suivie(s)</div></div><div class="kpi" data-href="#especes"><div class="l">En saison</div><div class="v">${season.length}</div><div class="d">espèces en ${MONTHS_L[m-1]}</div></div><div class="kpi" data-href="#adm-criees"><div class="l">Sources connectées</div><div class="v">${connected}</div><div class="d">API / serveur</div></div></div>
+ <div class="card"><h3>En saison ce mois-ci</h3><div class="row">${season.map(s=>`<button class="tag acc" data-act="species" data-v="${esc(s.n)}">${esc(s.n)}</button>`).join('')}</div>${closed.length?`<p class="small muted" style="margin:10px 0 0">Fermé ce mois-ci : ${closed.map(s=>`<a href="#especes" data-act="species" data-v="${esc(s.n)}">${esc(s.n)}</a>`).join(', ')}.</p>`:''}</div>
  <div class="card"><div class="row"><h3 class="grow" style="margin:0">Derniers cours · ${esc(c.nom)}</h3><a class="small" href="#resultats">Tout voir ›</a></div>
- ${top.length?`<div class="tw" style="margin-top:8px"><table><thead><tr><th>Espèce</th><th class="n">Kg</th><th class="n">€/kg</th></tr></thead><tbody>${top.map(r=>`<tr><td>${esc(r.espece)} <span class="muted small">${esc(r.calibre)}</span></td><td class="n">${fmt(r.kg,0)}</td><td class="n gold"><b>${fmt(r.prix)}</b></td></tr>`).join('')}</tbody></table></div>`:`<p class="small muted" style="margin:8px 0 0">Les cours s'afficheront ici dès qu'une source sera branchée (Admin › Criées de France).</p>`}</div>
- <div class="tiles"><a class="tile" href="#resultats"><div class="ic">${I.fish}</div><b>Résultats des criées</b><span>Apports et prix</span></a><a class="tile" href="#alertes"><div class="ic">${I.bell}</div><b>Alertes</b><span>Seuils de prix</span></a><a class="tile" href="#guide"><div class="ic">${I.book}</div><b>Mode d'emploi</b><span>Tout comprendre</span></a></div>`;
+ ${top.length?`<div class="tw" style="margin-top:8px"><table><thead><tr><th>Espèce</th><th class="n">Kg</th><th class="n">€/kg</th></tr></thead><tbody>${top.map(r=>`<tr><td data-act="spl" data-v="${esc(r.espece)}">${esc(r.espece)} <span class="muted small">${esc(r.calibre)}</span></td><td class="n">${fmt(r.kg,0)}</td><td class="n gold"><b>${fmt(r.prix)}</b></td></tr>`).join('')}</tbody></table></div>`:`<p class="small muted" style="margin:8px 0 0">Les cours s'afficheront ici dès qu'une source sera branchée (Admin › Criées de France).</p>`}</div>
+ <div class="tiles"><a class="tile" href="#resultats"><div class="ic">${I.fish}</div><b>Résultats des criées</b><span>Apports et prix</span></a><a class="tile" href="#alertes"><div class="ic">${I.bell}</div><b>Alertes</b><span>Seuils de prix</span></a><a class="tile" href="#carte"><div class="ic">${I.globe}</div><b>Carte maritime</b><span>Zones de pêche</span></a><a class="tile" href="#especes"><div class="ic">${I.fish}</div><b>Espèces</b><span>Fiches, techniques</span></a><a class="tile" href="#guide"><div class="ic">${I.book}</div><b>Mode d'emploi</b><span>Tout comprendre</span></a></div>`;
 }
 function vAccount(){
  const st=S.settings;
@@ -1002,6 +1018,7 @@ function vGuide(){
  return `${ADMIN?back():''}<h2>Mode d'emploi</h2><p class="muted small">L'application a deux espaces : un espace public (Accueil, Criées, Alertes, Compte) et un espace Administrateur protégé par code.</p>
  ${sec('Premiers pas',[['Ouvrir l\'administration','Onglet Admin, code initial 12345.'],['Changer le code','Admin › Entreprise & appli › Code d\'accès. Faites-le tout de suite.'],['Renseigner la société','Raison sociale, SIRET, TVA, adresse, IBAN : ils apparaissent sur les devis et factures.'],['Nom et logo','Choisissez un nom (propositions fournies) et, si vous le souhaitez, chargez votre propre logo.']])}
  ${sec('Résultats des criées',[['Choisir la criée','Onglet Criées : liste des 36 halles à marée françaises.'],['Avant / après vente','« Avant vente » = apports annoncés (bateaux, espèces, volumes). « Après vente » = prix obtenus, avec la variation par rapport à la veille.'],['Brancher une source','Admin › Criées de France › une criée › Connexion API : collez l\'URL et la clé fournies par la criée, cochez l\'actualisation automatique.'],['Sans API','Importez le fichier CSV envoyé par la criée, ou saisissez les lignes à la main.'],['Demander l\'accès','Dans la fiche criée, « Copier le mail de demande d\'accès » prépare un e-mail complet avec votre SIRET.']])}
+ ${sec('Espèces & carte',[['Fiches espèces','Touchez une espèce (accueil, calendrier, résultats, carte) : variétés, technique de pêche, matériel et consommables utilisés, zones, réglementation, qualité à l\'achat.'],['Carte maritime','Accueil › Carte : zones de pêche par région, filtrables par espèce. Touchez une zone pour ses espèces et ses criées, un point doré pour les résultats de la criée.'],['Liens','Depuis une fiche : créer une alerte prix, voir les prix et marges (admin), ouvrir la fiche d\'un consommable.']])}
  ${sec('Alertes',[['Créer une alerte','Onglet Alertes : espèce, seuil (≤ ou ≥) et criée.'],['Lecture','Une alerte « Déclenchée » indique la criée et le prix concernés, à chaque actualisation.']])}
  ${sec('Commercial',[['Démarchage','Base de chefs et palaces par zone (Normandie, Sarthe, Bretagne, grandes villes, Suisse). « + Ajouter » le place dans vos prospects avec une date de relance.'],['Message type','Bouton « Copier le message type » : e-mail de prospection prêt à envoyer.'],['Clients','Convertissez un prospect gagné en client en un clic.'],['Commandes','Client, lignes (espèce, kg, prix), date et heure d\'expédition, destination : le transport est calculé automatiquement.'],['Devis et factures','Depuis une commande : bouton Devis ou Facture. Numérotation automatique, TVA, mentions légales. Téléchargement ou copie.'],['Chiffre d\'affaires','Graphique sur 12 mois, encaissé / à encaisser, meilleurs clients, ventes par produit.']])}
  ${sec('Logistique',[['Expédition France','Départ, arrivée, poids : distance, temps, gazole, péages, chauffeur, froid, usure. Le coût s\'ajoute au devis.'],['Transporteurs','Comparez votre véhicule avec les tarifs de vos transporteurs : l\'option la moins chère est indiquée.']])}
@@ -1018,11 +1035,11 @@ function vCalendar(){
  return back()+`<h2>Calendrier des pêches</h2>
  <div class="pill-filter">${MONTHS.map((x,i)=>`<button data-act="calm" data-v="${i+1}" class="${m===i+1?'on':''}">${x}</button>`).join('')}</div>
  <form data-form="calparams" class="card"><h3>Paramètres de négociation</h3><div class="grid3"><div class="f"><label>Prix cible (− % vs moyen)</label><input name="targetPct" inputmode="decimal" value="${tg}"></div><div class="f"><label>Prix max (+ % vs moyen)</label><input name="maxPct" inputmode="decimal" value="${mx}"></div><div class="f"><label>Coef. revente</label><input name="resaleCoef" inputmode="decimal" value="${coef}"></div><div class="f"><label>Transport €/kg</label><input name="transportKg" inputmode="decimal" value="${tr}"></div><div class="f"><label>Volume (kg)</label><input name="calVol" inputmode="decimal" value="${vol}"></div><div class="f"><label>&nbsp;</label><button class="btn sec block">Recalculer</button></div></div>
- <label class="row small" style="color:var(--ink)"><input type="checkbox" data-act="calall" ${all?'checked':''}> Afficher toutes les espèces</label></form>
+ <label class="row small" style="color:var(--ink)"><input type="checkbox" data-change="calall" ${all?'checked':''}> Afficher toutes les espèces</label></form>
  ${list.map(s=>{const lv=live(s.n);const base=lv||s.pm;const isCl=(s.cl||[]).includes(m);const cur=s.m.includes(m);
-  if(!base)return `<div class="card"><div class="row"><b class="grow">${esc(s.n)}</b>${cur?'<span class="tag ok">En saison</span>':''}</div><div class="small muted">${esc(s.f)}</div><div class="months">${MONTHS.map((x,i)=>`<span class="${s.m.includes(i+1)?'on':''} ${(s.cl||[]).includes(i+1)?'cl':''} ${i+1===m?'cur':''}"></span>`).join('')}</div><div class="mlabels">${MONTHS.map(x=>`<i>${x[0]}</i>`).join('')}</div><p class="small" style="margin:8px 0 0">${esc(s.reg)}</p></div>`;
+  if(!base)return `<div class="card" id="sp-${s.n.replace(/[^a-zA-Z]/g,'')}"><div class="row" data-act="species" data-v="${esc(s.n)}"><b class="grow">${esc(s.n)} <span class="small muted">› fiche</span></b>${cur?'<span class="tag ok">En saison</span>':''}</div><div class="small muted">${esc(s.f)}</div><div class="months">${MONTHS.map((x,i)=>`<span class="${s.m.includes(i+1)?'on':''} ${(s.cl||[]).includes(i+1)?'cl':''} ${i+1===m?'cur':''}"></span>`).join('')}</div><div class="mlabels">${MONTHS.map(x=>`<i>${x[0]}</i>`).join('')}</div><p class="small" style="margin:8px 0 0">${esc(s.reg)}</p></div>`;
   const tgt=base*(1-tg/100),max=base*(1+mx/100),res=base*coef,pT=res-tgt-tr,pM=res-max-tr;
-  return `<div class="card"><div class="row"><b class="grow" style="font-size:15px">${esc(s.n)}</b>${isCl?'<span class="tag bad">Fermé</span>':cur?'<span class="tag ok">En saison</span>':'<span class="tag">Hors saison</span>'}</div><div class="small muted">${esc(s.f)}</div>
+  return `<div class="card" id="sp-${s.n.replace(/[^a-zA-Z]/g,'')}"><div class="row" data-act="species" data-v="${esc(s.n)}"><b class="grow" style="font-size:15px">${esc(s.n)} <span class="small muted">› fiche</span></b>${isCl?'<span class="tag bad">Fermé</span>':cur?'<span class="tag ok">En saison</span>':'<span class="tag">Hors saison</span>'}</div><div class="small muted">${esc(s.f)}</div>
   <div class="months">${MONTHS.map((x,i)=>`<span class="${s.m.includes(i+1)?'on':''} ${(s.cl||[]).includes(i+1)?'cl':''} ${i+1===m?'cur':''}"></span>`).join('')}</div><div class="mlabels">${MONTHS.map(x=>`<i style="font-style:normal">${x[0]}</i>`).join('')}</div>
   <p class="small" style="margin:8px 0">${esc(s.reg)}</p>
   <div class="cmp"><div><div class="l">${lv?'Cours constaté':'Prix moyen 2024'}</div><div class="v">${fmt(base)} €</div></div><div><div class="l">Prix cible</div><div class="v em">${fmt(tgt)} €</div></div><div><div class="l">Prix max</div><div class="v" style="color:var(--warn)">${fmt(max)} €</div></div></div>
@@ -1034,7 +1051,7 @@ function vCalendar(){
 function vConso2(){
  return back()+`<h2>Consommables chalutiers</h2><div class="banner info small">Tailles, poids et prix sont des <b>ordres de grandeur</b> à confirmer par devis. Saisissez vos vrais prix : ils remplacent les estimations dans le comparatif.</div>
  ${CONSO2.map(c=>{const p=S.consoPrices[c.id]||{};const fr=num(p.eu)||mid(c.fr),cn=num(p.cn)||mid(c.cn);const gap=fr&&cn?(fr-cn)/fr*100:null;
- return `<div class="card"><div class="part"><div class="ph">${partImg(c)}</div><div><b style="font-size:15px">${esc(c.nom)}</b><div class="small muted">${esc(c.metier)}</div><dl class="spec"><dt>Dimensions</dt><dd>${esc(c.dim)}</dd><dt>Poids</dt><dd>${esc(c.poids)}</dd><dt>Matière</dt><dd>${esc(c.mat)}</dd><dt>Usure</dt><dd>${esc(c.usure)}</dd></dl></div></div>
+ return `<div class="card" id="part-${c.id}"><div class="part"><label class="ph" title="Changer la photo">${partImg(c)}<input type="file" accept="image/*" data-file="cphoto" data-id="${c.id}" hidden></label><div><b style="font-size:15px">${esc(c.nom)}</b><div class="small muted">${esc(c.metier)}</div><dl class="spec"><dt>Dimensions</dt><dd>${esc(c.dim)}</dd><dt>Poids</dt><dd>${esc(c.poids)}</dd><dt>Matière</dt><dd>${esc(c.mat)}</dd><dt>Usure</dt><dd>${esc(c.usure)}</dd></dl></div></div>
  <div class="cmp"><div><div class="l">France</div><div class="v">${p.eu?eur(num(p.eu)):c.fr[0]+'–'+c.fr[1]+' €'}</div><div class="tiny">/ ${esc(c.unit)}${p.eu?' · votre prix':' · estimé'}</div></div><div><div class="l">Chine</div><div class="v">${p.cn?eur(num(p.cn)):c.cn?c.cn[0]+'–'+c.cn[1]+' €':'—'}</div><div class="tiny">${c.cn?'départ usine'+(p.cn?' · votre prix':' · estimé'):'non pertinent'}</div></div><div><div class="l">Écart</div><div class="v ${gap>0?'up':'down'}">${gap===null?'—':(gap>0?'−':'+')+fmt(Math.abs(gap),0)+' %'}</div><div class="tiny">avant transport et douane</div></div></div>
  ${c.warn?`<p class="small" style="color:var(--warn);margin:8px 0 0">${esc(c.warn)}</p>`:''}
  <div class="grid3" style="margin-top:10px"><div class="f"><label>Votre prix France €</label><input inputmode="decimal" value="${esc(p.eu||'')}" data-conso="${c.id}" data-k="eu"></div><div class="f"><label>Votre prix Chine €</label><input inputmode="decimal" value="${esc(p.cn||'')}" data-conso="${c.id}" data-k="cn"></div><div class="f"><label>Fournisseur retenu</label><input value="${esc(p.sup||'')}" data-conso="${c.id}" data-k="sup"></div></div>
@@ -1065,6 +1082,114 @@ function vWorld(){
  <p class="small muted">Rendu = prix + fret + assurance + droits + dédouanement (hors UE). Classement pondéré par la qualité : chaque demi-point sous 5/5 pénalise de 3 %.</p></div>`:''}`;
 }
 
+/* ============ V3 : fiches espèces ============ */
+// Gear keys -> consommables liés
+const GEAR={drague:{l:'Drague',c:['c0','c1','c2','c10']},chalut:{l:'Chalut de fond',c:['c3','c4','c5','c6','c7','c8','c9']},pelagique:{l:'Chalut pélagique',c:['c3','c6','c8','c9']},perche:{l:'Chalut à perche',c:['c3','c6','c10']},filet:{l:'Filet (fileyeur, trémail)',c:['c6','c12','c8','c16']},ligne:{l:'Ligne / palangre',c:['c16']},casier:{l:'Casier / nasse',c:['c11','c9']},senne:{l:'Senne tournante (bolinche)',c:['c6','c8']},canne:{l:'Canne, traîne',c:['c16']}};
+const SP_INFO={
+ 'Coquille Saint-Jacques':{sci:'Pecten maximus',var:["Coquille Saint-Jacques (Pecten maximus) – seule à porter ce nom",'Noix avec ou sans corail selon la saison',"À ne pas confondre : pétoncles et vanneaux (Aequipecten, Mimachlamys), moins chers","Label Rouge « Coquille et Noix de Saint-Jacques » en Normandie"],tech:['drague'],mat:'Drague à dents tractée sur le fond, cotte de mailles en anneaux (taille réglementaire), barres porte-dents, funes et chaînes. Pêche par jours et horaires autorisés.',qual:'Coquille bien fermée ou qui se referme au toucher, noix ferme et nacrée, odeur iodée.'},
+ 'Sole':{sci:'Solea solea',var:['Sole commune','Céteau (Dicologlossa cuneata), petite sole atlantique','Sole-perdrix (Microchirus variegatus)'],tech:['perche','chalut','filet'],mat:'Chalut à perche avec chaînes gratteuses, chalut de fond, ou filet trémail posé.',qual:'Peau sombre brillante, mucus clair, chair ferme ; calibres 1 (gros) à 5 (petits).'},
+ 'Bar':{sci:'Dicentrarchus labrax',var:['Bar de ligne (le plus valorisé)','Bar de chalut, bar de filet','Bar moucheté (Dicentrarchus punctatus), plus au sud'],tech:['ligne','filet','pelagique'],mat:"Lignes à main, palangres, leurres ; filets maillants ; chalut pélagique en bœuf.",qual:'Œil bombé, ouïes rouges, écailles adhérentes ; le « bar de ligne » se reconnaît à sa bague ou étiquette.'},
+ 'Turbot':{sci:'Scophthalmus maximus',var:['Turbot sauvage','Turbot d’élevage (prix plus bas)','Turbotin (petit calibre)'],tech:['filet','chalut'],mat:'Filet trémail ou maillant à grande maille, chalut de fond.',qual:'Peau épaisse à tubercules, chair blanche nacrée.'},
+ 'Barbue':{sci:'Scophthalmus rhombus',var:['Barbue (peau lisse, cousine du turbot)'],tech:['filet','chalut','perche'],mat:'Filet, chalut de fond et à perche.',qual:'Peau lisse et brillante, chair fine.'},
+ 'Saint-Pierre':{sci:'Zeus faber',var:['Saint-Pierre (tache noire sur le flanc)'],tech:['chalut','filet'],mat:'Chalut de fond, filet.',qual:'Couleurs vives, épines raides ; rendement en filets faible (≈ 35 %).'},
+ 'Lieu jaune':{sci:'Pollachius pollachius',var:['Lieu jaune (ligne latérale sombre)',"Lieu noir (Pollachius virens), moins cher"],tech:['ligne','filet'],mat:'Ligne, palangre, filet sur épaves et roches.',qual:'Dos doré-vert, chair blanche ; le lieu de ligne est le mieux payé.'},
+ 'Lotte (baudroie)':{sci:'Lophius piscatorius / L. budegassa',var:['Baudroie commune (blanche)','Baudroie rousse','Vendue entière ou en queues (lotte étêtée)'],tech:['filet','chalut'],mat:'Filet à lotte (grande maille), chalut de fond.',qual:'Chair ferme et blanche, peau visqueuse claire.'},
+ 'Merlu':{sci:'Merluccius merluccius',var:['Merlu (colin)','Merluchon (petit merlu)','Merlu de ligne (palangre), très valorisé'],tech:['ligne','chalut','filet'],mat:'Palangre, filet maillant, chalut de fond.',qual:'Chair très fragile : manipulation délicate, glaçage immédiat.'},
+ 'Merlan':{sci:'Merlangius merlangus',var:['Merlan de chalut','Merlan de ligne (plus cher)'],tech:['chalut','ligne'],mat:'Chalut de fond, lignes.',qual:'Chair fine et fragile, œil clair.'},
+ 'Rouget barbet':{sci:'Mullus surmuletus / M. barbatus',var:['Rouget de roche (surmulet)','Rouget de vase (barbatus)'],tech:['chalut','filet'],mat:'Chalut de fond, filet trémail.',qual:'Couleur rouge vif, barbillons intacts ; se vend souvent par calibre.'},
+ 'Dorade grise':{sci:'Spondyliosoma cantharus',var:['Dorade grise (griset)','Dorade royale (Sparus aurata), plus chère','Dorade rose (Pagellus bogaraveo)'],tech:['chalut','ligne','filet'],mat:'Chalut, ligne, filet.',qual:'Reflets argentés, chair ferme.'},
+ 'Maquereau':{sci:'Scomber scombrus',var:['Maquereau commun','Maquereau espagnol (Scomber colias)','Lisette (petit maquereau)'],tech:['ligne','pelagique','senne'],mat:'Lignes à plumes (« mitraillette »), chalut pélagique, bolinche.',qual:'Rayures nettes, très raide quand il est frais ; à vendre vite.'},
+ 'Hareng':{sci:'Clupea harengus',var:['Hareng frais','Hareng plein (œufs) et hareng laité','Hareng de Fécamp : démarche IGP'],tech:['pelagique','filet'],mat:'Chalut pélagique, filet dérivant.',qual:'Écailles brillantes, ventre ferme ; saison courte et intense.'},
+ 'Sardine':{sci:'Sardina pilchardus',var:['Sardine de bolinche (Bretagne Sud)','Sardine de Méditerranée'],tech:['senne','filet'],mat:'Bolinche (senne tournante), filet droit.',qual:'Œil vif, peau bleu-vert brillante.'},
+ 'Thon germon':{sci:'Thunnus alalunga',var:['Thon germon (thon blanc), longues nageoires pectorales'],tech:['canne','pelagique'],mat:'Ligne de traîne, canne, chalut pélagique.',qual:'Chair rosée claire, saignage à bord.'},
+ 'Seiche':{sci:'Sepia officinalis',var:['Seiche commune','Seiche de casier (moins abîmée)'],tech:['casier','chalut','filet'],mat:'Casier à seiche, chalut de fond, filet.',qual:'Peau intacte et nacrée, encre présente.'},
+ 'Calmar / encornet':{sci:'Loligo vulgaris / L. forbesii',var:['Encornet (calmar)','Supion (petite seiche, Méditerranée)'],tech:['chalut','ligne'],mat:'Chalut de fond, turlutte (leurre à calmar).',qual:'Peau tachetée brillante, chair blanche translucide.'},
+ 'Langoustine':{sci:'Nephrops norvegicus',var:['Langoustine vivante (la mieux payée)','Langoustine glacée','Calibres de 10 à 50 pièces / kg'],tech:['chalut'],mat:'Chalut à langoustine (grille de tri), sorties à la journée.',qual:'Vivante et mobile, tête non noircie.'},
+ 'Homard':{sci:'Homarus gammarus',var:['Homard européen (bleu)','À distinguer du homard américain, moins cher'],tech:['casier'],mat:'Casiers appâtés.',qual:'Vivant, vif, pinces élastiquées ; taille minimale réglementaire.'},
+ 'Tourteau':{sci:'Cancer pagurus',var:['Tourteau (dormeur)','Tourteau plein (lourd) ou creux'],tech:['casier','filet'],mat:'Casiers, filets.',qual:'Lourd en main = plein ; vivant.'},
+ 'Araignée de mer':{sci:'Maja brachydactyla',var:['Araignée de mer','Moussette (jeune araignée, très recherchée)'],tech:['filet','casier'],mat:'Filet trémail, casier.',qual:'Vivante, carapace dure, lourde.'},
+ 'Bulot':{sci:'Buccinum undatum',var:['Bulot (buccin)','Bulot de la baie de Granville'],tech:['casier'],mat:'Casiers à bulots appâtés, pêche sous licence.',qual:'Vivant : se rétracte au toucher.'},
+ 'Raie bouclée':{sci:'Raja clavata',var:['Raie bouclée','Raie lisse, raie fleurie, raie brunette (quotas)','Vendue entière ou en ailes'],tech:['chalut','filet'],mat:'Chalut de fond, filet.',qual:'Mucus clair, pas d’odeur d’ammoniac.'}
+};
+/* ============ V3 : carte ============ */
+const COAST={
+ fr:[[51.08,2.53],[51.05,2.37],[50.95,1.85],[50.87,1.58],[50.73,1.6],[50.52,1.59],[50.4,1.56],[50.22,1.62],[50.18,1.49],[50.06,1.37],[49.93,1.08],[49.87,0.71],[49.76,0.37],[49.71,0.2],[49.51,0.07],[49.47,0.12],[49.44,0.3],[49.42,0.23],[49.37,0.08],[49.29,-0.12],[49.29,-0.25],[49.33,-0.46],[49.34,-0.62],[49.35,-0.75],[49.4,-0.99],[49.39,-1.04],[49.33,-1.15],[49.42,-1.18],[49.59,-1.27],[49.67,-1.26],[49.65,-1.62],[49.72,-1.94],[49.53,-1.88],[49.37,-1.79],[49.22,-1.6],[49.05,-1.6],[48.84,-1.61],[48.65,-1.51],[48.68,-1.85],[48.65,-2.03],[48.68,-2.32],[48.63,-2.47],[48.53,-2.73],[48.65,-2.83],[48.78,-3.05],[48.82,-3.44],[48.73,-3.55],[48.68,-3.86],[48.73,-3.98],[48.67,-4.33],[48.6,-4.57],[48.52,-4.77],[48.33,-4.77],[48.37,-4.5],[48.28,-4.42],[48.25,-4.62],[48.17,-4.5],[48.1,-4.33],[48.04,-4.74],[48.02,-4.54],[47.8,-4.37],[47.8,-4.28],[47.83,-4.17],[47.87,-4.11],[47.87,-3.92],[47.8,-3.75],[47.71,-3.37],[47.66,-3.21],[47.48,-3.12],[47.58,-3.07],[47.55,-2.9],[47.48,-2.48],[47.29,-2.51],[47.28,-2.39],[47.27,-2.21],[47.11,-2.1],[47.02,-2.03],[46.89,-2.15],[46.69,-1.94],[46.49,-1.79],[46.34,-1.43],[46.33,-1.31],[46.16,-1.15],[45.99,-1.09],[45.82,-1.11],[45.62,-1.03],[45.57,-1.06],[45.51,-1.12],[45.0,-1.2],[44.63,-1.25],[44.66,-1.17],[44.6,-1.21],[44.44,-1.25],[44.21,-1.3],[43.64,-1.45],[43.48,-1.56],[43.39,-1.66],[43.37,-1.78],[43.0,-1.0],[42.8,0.0],[42.7,1.0],[42.45,2.0],[42.44,3.17],[42.52,3.11],[42.55,3.04],[42.7,3.04],[42.91,3.05],[43.01,3.06],[43.1,3.1],[43.25,3.29],[43.28,3.5],[43.4,3.7],[43.53,3.93],[43.53,4.14],[43.45,4.43],[43.38,4.58],[43.39,4.82],[43.43,4.94],[43.33,5.15],[43.3,5.36],[43.21,5.54],[43.17,5.6],[43.13,5.75],[43.05,5.86],[43.1,5.93],[43.03,6.1],[43.1,6.2],[43.13,6.37],[43.2,6.68],[43.27,6.64],[43.42,6.77],[43.55,7.02],[43.56,7.12],[43.69,7.27],[43.73,7.42],[43.78,7.51],[44.1,7.7],[45.1,6.6],[45.9,7.0],[46.4,6.8],[46.2,6.1],[46.95,6.6],[47.6,7.6],[48.97,8.2],[49.45,6.4],[49.5,5.8],[50.1,4.8],[50.8,2.6]],
+ uk:[[52.2,1.7],[51.37,1.44],[51.13,1.31],[50.91,0.98],[50.73,0.24],[50.82,-0.14],[50.78,-0.8],[50.75,-1.3],[50.72,-1.88],[50.52,-2.45],[50.62,-3.4],[50.22,-3.64],[50.37,-4.14],[50.33,-4.7],[49.96,-5.2],[50.07,-5.71],[50.2,-5.5],[50.6,-4.8],[51.0,-4.4],[51.2,-3.6],[51.5,-3.0],[51.6,-4.2],[51.7,-5.3],[52.2,-4.5],[52.6,-4.2],[53.0,-4.6],[53.4,-3.0],[53.6,-1.0],[53.0,0.3],[52.9,1.4]],
+ es:[[43.37,-1.78],[43.32,-1.98],[43.4,-3.0],[43.46,-3.8],[43.55,-5.5],[43.56,-6.6],[42.4,-6.6],[42.4,0.5],[42.45,2.0],[42.7,1.0],[42.8,0.0],[43.0,-1.0]],
+ be:[[51.08,2.53],[51.35,3.37],[51.75,3.75],[51.9,4.6],[51.2,5.5],[50.1,4.8],[50.8,2.6]],
+ co:[[43.0,9.36],[42.7,9.45],[42.1,9.55],[41.59,9.28],[41.39,9.16],[41.92,8.74],[42.25,8.6],[42.57,8.76],[42.97,9.3]],
+ it:[[43.78,7.51],[44.2,8.4],[44.4,8.9],[44.1,9.8],[43.6,10.3],[42.4,10.6],[42.4,11.5],[46.5,11.5],[46.5,8.5],[45.9,7.0],[45.1,6.6],[44.1,7.7]],
+ isl:[[49.21,-2.13,.09,.05],[49.45,-2.58,.06,.05],[48.46,-5.09,.06,.04],[47.33,-3.18,.13,.05],[46.97,-2.25,.05,.12],[46.2,-1.4,.12,.04],[45.93,-1.3,.07,.15],[47.64,-3.47,.06,.03]]
+};
+const FZONES=[
+ {id:'mdn',n:'Mer du Nord & détroit',lat:51.15,lon:2.05,rx:.55,ry:.25,sp:['Merlan','Hareng','Maquereau','Sole','Raie bouclée'],cr:['dunkerque','boulogne'],d:'Détroit du Pas-de-Calais et sud de la mer du Nord : pélagiques et poissons plats.'},
+ {id:'mest',n:'Manche Est – pays de Caux',lat:50.15,lon:0.95,rx:.7,ry:.3,sp:['Coquille Saint-Jacques','Hareng','Maquereau','Merlan','Seiche','Sole','Rouget barbet'],cr:['boulogne','dieppe','fecamp'],d:'Gisements de Saint-Jacques au large de Dieppe, saison du hareng en fin d’année.'},
+ {id:'seine',n:'Baie de Seine',lat:49.55,lon:-0.45,rx:.55,ry:.2,sp:['Coquille Saint-Jacques','Sole','Seiche','Bar','Bulot','Maquereau'],cr:['portenbessin','grandcamp','fecamp'],d:'Principal gisement classé de Saint-Jacques de la Manche, ouvert par arrêté en saison.'},
+ {id:'cot',n:'Nord Cotentin',lat:49.82,lon:-1.6,rx:.5,ry:.15,sp:['Homard','Tourteau','Lieu jaune','Bar','Araignée de mer'],cr:['cherbourg'],d:'Forts courants (raz Blanchard) : crustacés de casier et poissons de roche.'},
+ {id:'gnb',n:'Golfe normand-breton',lat:48.95,lon:-1.95,rx:.35,ry:.35,sp:['Bulot','Seiche','Araignée de mer','Homard','Coquille Saint-Jacques','Bar'],cr:['granville','cancale','saintmalo'],d:'Premier port coquillier de France (Granville) : bulot, Saint-Jacques, seiche.'},
+ {id:'stb',n:'Baie de Saint-Brieuc',lat:48.68,lon:-2.65,rx:.25,ry:.15,sp:['Coquille Saint-Jacques','Araignée de mer'],cr:['erquy','saintquay'],d:'Gisement classé de Saint-Jacques, saison d’hiver très encadrée.'},
+ {id:'nfin',n:'Nord Finistère',lat:48.92,lon:-3.95,rx:.6,ry:.15,sp:['Tourteau','Araignée de mer','Homard','Lieu jaune','Bar'],cr:['roscoff'],d:'Crustacés de casier (Roscoff) et poissons de roche.'},
+ {id:'iroise',n:"Mer d'Iroise",lat:48.25,lon:-5.15,rx:.3,ry:.4,sp:['Bar','Lieu jaune','Homard','Araignée de mer','Langoustine'],cr:['brest','douarnenez','audierne'],d:'Parc naturel marin : ligneurs, caseyeurs, petite pêche côtière de qualité.'},
+ {id:'celt',n:'Vers la mer Celtique (pêche au large)',lat:49.0,lon:-5.75,rx:.35,ry:.35,sp:['Lotte (baudroie)','Merlu','Saint-Pierre','Raie bouclée','Langoustine'],cr:['lorient','concarneau','guilvinec'],d:'Zone des chalutiers hauturiers (Lorient, Concarneau) : lotte, merlu, baudroie.'},
+ {id:'bigouden',n:'Sud Finistère – pays bigouden',lat:47.55,lon:-4.25,rx:.45,ry:.2,sp:['Langoustine','Lotte (baudroie)','Merlu','Sardine','Saint-Pierre','Rouget barbet'],cr:['saintguenole','guilvinec','loctudy','concarneau'],d:'Langoustine vivante du Guilvinec, sardine de Concarneau et Douarnenez.'},
+ {id:'bsud',n:'Bretagne Sud – Quiberon, Belle-Île',lat:47.2,lon:-3.3,rx:.4,ry:.18,sp:['Bar','Sardine','Seiche','Calmar / encornet','Langoustine','Dorade grise'],cr:['lorient','quiberon','laturballe'],d:'Petite pêche côtière variée, bar et sardine en saison.'},
+ {id:'vasiere',n:'Grande Vasière',lat:46.8,lon:-3.2,rx:.6,ry:.3,sp:['Langoustine','Merlu','Sole','Lotte (baudroie)'],cr:['lecroisic','laturballe','lessables','saintgilles','noirmoutier'],d:'Vaste fond vaseux au large de la Bretagne Sud et de la Vendée : langoustine, merlu.'},
+ {id:'pertuis',n:'Pertuis charentais',lat:46.05,lon:-1.6,rx:.35,ry:.25,sp:['Sole','Seiche','Bar','Dorade grise','Maquereau'],cr:['larochelle','oleron','royan'],d:'Sole et seiche au printemps, nombreux petits fileyeurs.'},
+ {id:'gasc',n:'Golfe de Gascogne Sud',lat:44.1,lon:-2.4,rx:.6,ry:.55,sp:['Thon germon','Merlu','Sardine','Maquereau','Bar'],cr:['arcachon','saintjeandeluz'],d:'Thon germon en été, merlu de ligne, sardine et anchois (Saint-Jean-de-Luz).'},
+ {id:'lion',n:'Golfe du Lion',lat:42.95,lon:3.85,rx:.6,ry:.3,sp:['Sardine','Merlu','Rouget barbet','Seiche','Calmar / encornet','Dorade grise'],cr:['portlanouvelle','agde','sete','graudroi'],d:'Chalutiers et petits métiers de Sète, Agde, Le Grau-du-Roi.'},
+ {id:'prov',n:'Côte provençale & Riviera',lat:42.82,lon:6.4,rx:.6,ry:.12,sp:['Rouget barbet','Calmar / encornet','Dorade grise'],cr:[],d:'Petits métiers, pas de halle à marée déclarée : vente directe et marchés.'}
+];
+const CRIEE_GEO={dunkerque:[51.05,2.37],boulogne:[50.73,1.6],dieppe:[49.93,1.08],fecamp:[49.76,0.37],portenbessin:[49.35,-0.75],grandcamp:[49.39,-1.04],cherbourg:[49.65,-1.62],granville:[48.84,-1.6],cancale:[48.68,-1.85],saintmalo:[48.65,-2.02],erquy:[48.63,-2.47],saintquay:[48.65,-2.83],roscoff:[48.72,-3.98],brest:[48.38,-4.49],douarnenez:[48.1,-4.33],audierne:[48.02,-4.54],saintguenole:[47.81,-4.37],guilvinec:[47.8,-4.28],loctudy:[47.83,-4.17],concarneau:[47.87,-3.92],lorient:[47.73,-3.37],quiberon:[47.48,-3.12],laturballe:[47.35,-2.51],lecroisic:[47.29,-2.51],noirmoutier:[47.0,-2.25],saintgilles:[46.69,-1.94],lessables:[46.49,-1.79],larochelle:[46.15,-1.15],oleron:[45.96,-1.36],royan:[45.62,-1.03],arcachon:[44.66,-1.17],saintjeandeluz:[43.39,-1.66],portlanouvelle:[43.01,3.06],agde:[43.28,3.5],sete:[43.4,3.7],graudroi:[43.53,4.14]};
+const MAP={lon0:-6.4,lat0:51.6,k:60,c:Math.cos(46.5*Math.PI/180)};
+const mp=(lat,lon)=>[((lon-MAP.lon0)*MAP.c*MAP.k),((MAP.lat0-lat)*MAP.k)];
+const VIEWS={france:[0,0,700,640],manche:[130,0,400,230],bretagne:[0,120,280,210],atlantique:[120,250,300,340],med:[320,420,360,210]};
+function polyD(pts){return pts.map((p,i)=>(i?'L':'M')+mp(p[0],p[1]).map(v=>v.toFixed(1)).join(' ')).join('')+'Z'}
+function mapSVG(){
+ const f=sub.mapSp||'';const vb=VIEWS[sub.mapView||'france'];const s=vb[2]/700;
+ const land=['fr','uk','es','be','co','it'].map(k=>`<path d="${polyD(COAST[k])}" class="${k==='fr'||k==='co'?'land':'land2'}"/>`).join('')+COAST.isl.map(([la,lo,rx,ry])=>{const [x,y]=mp(la,lo);return `<ellipse cx="${x}" cy="${y}" rx="${rx*MAP.c*MAP.k}" ry="${ry*MAP.k}" class="land"/>`}).join('');
+ let grid='';for(let lo=-6;lo<=10;lo+=2){const [x]=mp(46,lo);grid+=`<line x1="${x}" y1="0" x2="${x}" y2="700" class="grid"/>`}for(let la=42;la<=51;la+=1){const [,y]=mp(la,0);grid+=`<line x1="0" y1="${y}" x2="800" y2="${y}" class="grid"/>`}
+ const zones=FZONES.map(z=>{const [x,y]=mp(z.lat,z.lon);const on=!f||z.sp.includes(f);const sel=sub.mapZone===z.id;return `<g data-act="mapzone" data-id="${z.id}" style="cursor:pointer" opacity="${on?1:.15}"><ellipse cx="${x}" cy="${y}" rx="${z.rx*MAP.c*MAP.k}" ry="${z.ry*MAP.k}" class="zone ${sel?'sel':''}"/><text x="${x}" y="${y+3}" class="zl" font-size="${Math.max(6,10*s)}">${esc(z.n.split(' – ')[0].split(' (')[0])}</text></g>`}).join('');
+ const dots=Object.entries(CRIEE_GEO).map(([id,[la,lo]])=>{const [x,y]=mp(la,lo);return `<g data-act="mapcriee" data-id="${id}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="${Math.max(1.6,3.2*s)}" class="cd"/>${s<.6?`<text x="${x+4*s+2}" y="${y-3*s}" class="cl" font-size="${Math.max(5,8*s)}">${esc(criee(id).nom.split(' – ')[0])}</text>`:''}</g>`}).join('');
+ const [hx,hy]=mp(49.49,0.11);
+ return `<svg viewBox="${vb.join(' ')}" class="map" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sea" cx=".4" cy=".4" r=".8"><stop offset="0" stop-color="#081626"/><stop offset="1" stop-color="#03070D"/></radialGradient></defs><rect x="-50" y="-50" width="900" height="800" fill="url(#sea)"/>${grid}${land}${zones}${dots}<g><circle cx="${hx}" cy="${hy}" r="${4*s}" fill="none" stroke="#14B88A" stroke-width="${1.2*s}"/><text x="${hx+6*s}" y="${hy+10*s}" class="hv" font-size="${Math.max(6,10*s)}">Le Havre</text></g></svg>`;
+}
+function vMap(){
+ const z=FZONES.find(x=>x.id===sub.mapZone);const f=sub.mapSp||'';
+ return `<h2>Carte des zones de pêche</h2>
+ <div class="seg" style="margin-bottom:10px">${[['france','France'],['manche','Manche'],['bretagne','Bretagne'],['atlantique','Atlantique'],['med','Méditerranée']].map(([v,l])=>`<button data-act="mapview" data-v="${v}" class="${(sub.mapView||'france')===v?'on':''}">${l}</button>`).join('')}</div>
+ <div class="f"><select data-change="mapsp">${opt('','Toutes les espèces',f)}${SPECIES.map(s=>opt(s.n,s.n,f)).join('')}</select></div>
+ <div class="mapbox">${mapSVG()}</div>
+ <div class="row small muted" style="margin:6px 0 12px"><span><span class="dot live"></span> zone de pêche</span><span><span class="dot" style="background:var(--gold)"></span> criée</span><span class="grow"></span><span>Touchez une zone ou une criée</span></div>
+ ${z?`<div class="card" id="zoneinfo"><div class="row"><h3 class="grow" style="margin:0">${esc(z.n)}</h3><button class="x" data-act="mapzone" data-id="">×</button></div><p class="small" style="margin:8px 0">${esc(z.d)}</p>
+ <div class="small muted" style="margin-bottom:4px">Espèces (touchez pour la fiche)</div><div class="row">${z.sp.map(n=>`<button class="tag acc" data-act="species" data-v="${esc(n)}">${esc(n)}</button>`).join('')}</div>
+ ${z.cr.length?`<div class="small muted" style="margin:10px 0 4px">Criées de la zone</div><div class="row">${z.cr.map(id=>`<button class="btn sec sm" data-act="gocriee" data-id="${id}">${esc(criee(id).nom)}</button>`).join('')}</div>`:''}</div>`
+ :f?`<div class="card"><h3>${esc(f)}</h3><p class="small" style="margin:0 0 8px">Zones où l'espèce est pêchée : ${FZONES.filter(x=>x.sp.includes(f)).map(x=>esc(x.n)).join(', ')||'—'}.</p><button class="btn sm" data-act="species" data-v="${esc(f)}">Ouvrir la fiche</button></div>`
+ :`<div class="card small muted">Carte schématique. Zones indicatives des grandes pêcheries publiques, établies à partir des criées et des gisements connus. Les coins précis des pêcheurs ne sont pas publiés.</div>`}`;
+}
+function vSpecies(){
+ const m=new Date().getMonth()+1;const s=(sub.sps||'').toLowerCase();
+ const list=SPECIES.filter(x=>!s||x.n.toLowerCase().includes(s));
+ return `<h2>Espèces</h2><input placeholder="Rechercher une espèce…" value="${esc(sub.sps||'')}" data-input="sps" style="margin-bottom:10px">
+ <div class="card list">${list.map(x=>`<div class="it" data-act="species" data-v="${esc(x.n)}" style="cursor:pointer"><div class="grow"><div class="t">${esc(x.n)}</div><div class="small muted"><i>${esc((SP_INFO[x.n]||{}).sci||'')}</i> · ${esc(x.f)}</div></div>${(x.cl||[]).includes(m)?'<span class="tag bad">Fermé</span>':x.m.includes(m)?'<span class="tag ok">En saison</span>':''}<span class="muted">›</span></div>`).join('')}</div>`;
+}
+function speciesSheet(name){
+ const sp=SPECIES.find(x=>x.n===name);if(!sp)return;const I2=SP_INFO[name]||{};const m=new Date().getMonth()+1;
+ const zones=FZONES.filter(z=>z.sp.includes(name));const gear=(I2.tech||[]).map(k=>GEAR[k]).filter(Boolean);
+ const parts=[...new Set(gear.flatMap(g=>g.c))].map(id=>CONSO2.find(c=>c.id===id)).filter(Boolean);
+ openModal(name,`<div class="small muted" style="margin-top:-8px"><i>${esc(I2.sci||'')}</i></div>
+ <div class="row" style="margin:10px 0">${(sp.cl||[]).includes(m)?'<span class="tag bad">Fermé ce mois-ci</span>':sp.m.includes(m)?'<span class="tag ok">En saison</span>':'<span class="tag">Hors saison principale</span>'}${sp.pm?`<span class="tag acc">Prix moyen criée 2024 : ${fmt(sp.pm)} €/kg</span>`:''}</div>
+ <div class="months">${MONTHS.map((x,i)=>`<span class="${sp.m.includes(i+1)?'on':''} ${(sp.cl||[]).includes(i+1)?'cl':''} ${i+1===m?'cur':''}"></span>`).join('')}</div><div class="mlabels">${MONTHS.map(x=>`<i style="font-style:normal">${x[0]}</i>`).join('')}</div>
+ <div class="ornament">Variétés</div><ul class="small" style="margin:0;padding-left:18px">${(I2.var||[]).map(v=>`<li>${esc(v)}</li>`).join('')}</ul>
+ <div class="ornament">Technique & matériel</div><div class="row" style="margin-bottom:8px">${gear.map(g=>`<span class="tag acc">${esc(g.l)}</span>`).join('')}</div><p class="small" style="margin:0">${esc(I2.mat||'')}</p>
+ ${parts.length?`<div class="small muted" style="margin:10px 0 4px">Consommables utilisés${ADMIN?' (touchez pour la fiche)':''}</div><div class="row">${parts.map(c=>ADMIN?`<button class="btn sec sm" data-act="goconso" data-id="${c.id}">${esc(c.nom)}</button>`:`<span class="small">• ${esc(c.nom)}</span>`).join(' ')}</div>`:''}
+ <div class="ornament">Où & quand</div><p class="small" style="margin:0 0 6px"><b>Côtes :</b> ${esc(sp.f)}</p><div class="row">${zones.map(z=>`<button class="btn sec sm" data-act="gozone" data-id="${z.id}">${esc(z.n)}</button>`).join('')}</div>
+ <p class="small" style="margin:10px 0 0"><b>Réglementation :</b> ${esc(sp.reg)}</p>
+ <div class="ornament">Qualité à l'achat</div><p class="small" style="margin:0">${esc(I2.qual||'')}</p>
+ <div class="row" style="margin-top:14px"><button class="btn sm" data-act="spalert" data-v="${esc(name)}">Créer une alerte prix</button>${ADMIN?`<button class="btn sec sm" data-act="spcal" data-v="${esc(name)}">Prix & marges</button>`:''}</div>
+ <p class="tiny" style="margin-top:12px">Saisons et réglementation indicatives : vérifiez les arrêtés en vigueur. Prix : FranceAgriMer / VISIOMer 2024.</p>`);
+}
+function speciesFromLabel(t){t=(t||'').toLowerCase();return (SPECIES.find(s=>t.includes(s.n.split(/[ (/]/)[0].toLowerCase()))||{}).n}
+
 /* ============ Modale ============ */
 function openModal(title,html){$('#modal-root').innerHTML=`<div class="modal-bg" data-act="closemodal-bg"><div class="modal"><h2>${esc(title)}<button class="x" data-act="closemodal">×</button></h2>${html}</div></div>`}
 function closeModal(){$('#modal-root').innerHTML=''}
@@ -1074,6 +1199,7 @@ const A={
  phase:e=>{sub.phase=e.dataset.v;render()},
  refresh:async e=>{const id=e.dataset.id;e.disabled=true;try{await fetchCriee(id)}catch(err){const c=S.criees[id]=S.criees[id]||{};c.lastErr=err.message;save('criees');toast(err.message)}render()},
  logout:()=>{ADMIN=false;try{sessionStorage.removeItem('mp_adm')}catch(e){}location.hash='#accueil';render()},
+ watchgo:e=>{const w=S.watch.find(x=>x.id===e.dataset.id);const hits=evalWatch(w);if(hits.length){sub.criee=hits[0].id;sub.phase=w.kind==='apport'?'avant':'apres';sub.filter=w.espece;location.hash='#resultats'}else{const n=speciesFromLabel(w.espece);if(n)speciesSheet(n);else toast('Aucun résultat pour le moment')}},
  delwatch:e=>{S.watch=S.watch.filter(w=>w.id!==e.dataset.id);save('watch');render()},
  facade:e=>{sub.facade=e.dataset.v;render()},
  opencriee:(e,ev)=>{ev.preventDefault();sub.crieeDetail=e.dataset.id;if(location.hash!=='#adm-criees')location.hash='#adm-criees';else render();window.scrollTo(0,0)},
@@ -1104,14 +1230,14 @@ const A={
  dtype:e=>{sub.dtype=e.dataset.v;render()},
  newdoc:e=>openModal(e.dataset.type==='facture'?'Nouvelle facture':'Nouveau devis',docForm({type:e.dataset.type})),
  viewdoc:e=>{const d=S.docs.find(x=>x.id===e.dataset.id);if(!d)return;const F=d.type==='facture';
-  openModal((F?'Facture ':'Devis ')+d.num,`${docHTML(d)}<div class="row" style="margin-top:12px">${DL?`<button class="btn sm" data-act="dldoc" data-id="${d.id}">Télécharger</button>`:''}<button class="btn sec sm" data-act="printdoc">Imprimer / PDF</button><button class="btn sec sm" data-act="copydoc" data-id="${d.id}">Copier le texte</button><button class="btn sec sm" data-act="editdoc" data-id="${d.id}">Modifier</button></div>
+  openModal((F?'Facture ':'Devis ')+d.num,`${docHTML(d)}<div class="row" style="margin-top:12px"><button class="btn sm" data-act="dldoc" data-id="${d.id}">Télécharger</button><button class="btn sec sm" data-act="printdoc">Imprimer / PDF</button><button class="btn sec sm" data-act="copydoc" data-id="${d.id}">Copier le texte</button><button class="btn sec sm" data-act="editdoc" data-id="${d.id}">Modifier</button></div>
   <div class="row" style="margin-top:8px"><select class="grow" data-change="docstat" data-id="${d.id}">${(F?['émise','envoyée','payée','annulée']:['brouillon','envoyé','accepté','refusé']).map(x=>opt(x,x,d.statut)).join('')}</select>${!F?`<button class="btn acc sm" data-act="devis2fact" data-id="${d.id}">Transformer en facture</button>`:''}${!F||d.statut==='émise'?`<button class="btn danger sm" data-act="deldoc" data-id="${d.id}">Suppr.</button>`:''}</div>${F?'<p class="small muted">Une facture émise ne se supprime pas une fois envoyée : passez-la en « annulée » et émettez un avoir si besoin.</p>':''}`)},
  editdoc:e=>{const d=S.docs.find(x=>x.id===e.dataset.id);openModal('Modifier '+d.num,docForm(d))},
  deldoc:e=>{S.docs=S.docs.filter(d=>d.id!==e.dataset.id);save('docs');closeModal();render()},
  devis2fact:e=>{const d=S.docs.find(x=>x.id===e.dataset.id);d.statut='accepté';const f={...d,id:uid(),type:'facture',num:nextNum('facture'),date:todayISO(),due:addDays(todayISO(),num(S.settings.payDays)),statut:'émise',fromDevis:d.num,lines:d.lines.map(l=>({...l}))};S.docs.push(f);save('docs');sub.dtype='facture';render();A.viewdoc({dataset:{id:f.id}})},
  copydoc:e=>copyText(docPlain(S.docs.find(x=>x.id===e.dataset.id))),
  printdoc:()=>{try{window.print()}catch(e){}toast('Si rien ne s\'ouvre : utilisez Télécharger puis Imprimer en PDF')},
- dldoc:async e=>{const d=S.docs.find(x=>x.id===e.dataset.id);const html=`<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>${esc(d.num)}</title><style>body{font:12px Inter,Arial,sans-serif;margin:24px;color:#111}table{width:100%;border-collapse:collapse}th,td{padding:6px;border-bottom:1px solid #ddd;text-align:left}.n{text-align:right}.kv{display:flex;justify-content:space-between;padding:4px 0}.tot{border-top:2px solid #0B1F33;font-weight:700}</style></head><body>${docHTML(d)}<script>print()<\/script></body></html>`;try{await DL.save({filename:d.num+'.html',data:html})}catch(err){try{await DL.save({filename:d.num+'.html',data:new Blob([html],{type:'text/html'})})}catch(e2){toast('Téléchargement annulé')}}},
+ dldoc:async e=>{const d=S.docs.find(x=>x.id===e.dataset.id);const html=`<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>${esc(d.num)}</title><style>body{font:12px Inter,Arial,sans-serif;margin:24px;color:#111}table{width:100%;border-collapse:collapse}th,td{padding:6px;border-bottom:1px solid #ddd;text-align:left}.n{text-align:right}.kv{display:flex;justify-content:space-between;padding:4px 0}.tot{border-top:2px solid #0B1F33;font-weight:700}</style></head><body>${docHTML(d)}<script>print()<\/script></body></html>`;await saveFile(d.num+'.html',html,'text/html')},
  saveshipparams:()=>{const p=readShip();for(const k of ['fuelPrice','conso','speed','peageKm','autorouteShare','driverRate','frigoH','vehicleKm','loadMin'])S.settings[k]=num(p[k]);S.settings.origin=p.from;save('settings');toast('Paramètres enregistrés')},
  shiptoorder:()=>{const p=readShip();const r=transportCalc(p);const o=S.orders.find(x=>x.id===$('#shipOrder').value);if(!o)return;o.dest=p.to;o.km=p.km;o.ar=p.ar;o.transport={km:r.km,hours:r.hours,total:r.total};o.eta=etaFor(o);save('orders');toast('Transport affecté à '+o.num)},
  delcarrier:e=>{S.carriers=S.carriers.filter(c=>c.id!==e.dataset.id);save('carriers');render()},
@@ -1120,10 +1246,21 @@ const A={
  addquote:()=>{const p=readChina();p.quotes.push({name:'',port:'',cost:'',days:''});S.imports[0]=p;save('imports');render()},
  deldisr:e=>{S.disruptions=S.disruptions.filter(d=>d.id!==e.dataset.id);save('disruptions');render()},
  export:()=>{const o={};KEYS.forEach(k=>o[k]=S[k]);o.results=S.results;copyText(JSON.stringify(o))},
- exportfile:async()=>{const o={};KEYS.forEach(k=>o[k]=S[k]);o.results=S.results;try{await DL.save({filename:'sauvegarde-'+todayISO()+'.json',data:JSON.stringify(o,null,1)})}catch(e){toast('Téléchargement annulé')}},
+ exportfile:async()=>{const o={};KEYS.forEach(k=>o[k]=S[k]);o.results=S.results;await saveFile('sauvegarde-'+todayISO()+'.json',JSON.stringify(o,null,1),'application/json')},
  importjson:()=>openModal('Restaurer une sauvegarde',`<form data-form="restore"><div class="f"><input type="file" accept=".json,application/json" data-file="json"></div><textarea name="json" id="restore-json" placeholder="Collez le contenu de la sauvegarde"></textarea><button class="btn block" style="margin-top:10px">Restaurer</button></form>`),
  wipe:()=>openModal('Effacer les données',`<p>Clients, prospects, commandes, devis, factures et réglages seront effacés sur tous vos appareils. Cette action est définitive.</p><form data-form="wipe"><div class="f"><label>Tapez EFFACER pour confirmer</label><input name="c" required></div><button class="btn danger block">Effacer définitivement</button></form>`),
  closemodal:()=>closeModal(),
+ species:(e,ev)=>{ev&&ev.preventDefault&&ev.preventDefault();speciesSheet(e.dataset.v)},
+ spl:e=>{const n=speciesFromLabel(e.dataset.v);if(n)speciesSheet(n);else toast('Pas de fiche pour « '+e.dataset.v+' »')},
+ mapzone:e=>{sub.mapZone=e.dataset.id;render();if(e.dataset.id)setTimeout(()=>{const c=document.getElementById('zoneinfo');c&&c.scrollIntoView({behavior:'smooth',block:'nearest'})},50)},
+ mapcriee:e=>{sub.criee=e.dataset.id;location.hash='#resultats'},
+ mapview:e=>{sub.mapView=e.dataset.v;render()},
+ gozone:e=>{closeModal();sub.mapZone=e.dataset.id;sub.mapSp='';if(location.hash==='#carte')render();else location.hash='#carte'},
+ gocriee:e=>{closeModal();sub.criee=e.dataset.id;location.hash='#resultats'},
+ goconso:e=>{closeModal();const go=()=>{const el=document.getElementById('part-'+e.dataset.id);el&&el.scrollIntoView({behavior:'smooth'})};if(location.hash==='#adm-consommables')go();else{location.hash='#adm-consommables';setTimeout(go,150)}},
+ spalert:e=>{closeModal();sub.alertSp=e.dataset.v;if(location.hash==='#alertes')render();else location.hash='#alertes'},
+ spcal:e=>{closeModal();sub.calAll=true;const go=()=>{const el=document.getElementById('sp-'+e.dataset.v.replace(/[^a-zA-Z]/g,''));el&&el.scrollIntoView({behavior:'smooth'})};if(location.hash==='#adm-calendrier'){render();go()}else{location.hash='#adm-calendrier';setTimeout(go,150)}},
+ scrollto:e=>{const el=document.getElementById(e.dataset.id);el&&el.scrollIntoView({behavior:'smooth'})},
  setname:e=>{const i=document.querySelector('[name=appName]');if(i)i.value=e.dataset.v;S.settings.appName=e.dataset.v;save('settings');header();toast('Nom : '+e.dataset.v)},
  calm:e=>{sub.calM=+e.dataset.v;render()},
  calall:e=>{sub.calAll=e.checked;render()},
@@ -1131,10 +1268,14 @@ const A={
  delofr:e=>{S.sourcing.offers.splice(+e.dataset.i,1);save('sourcing');render()},
  'closemodal-bg':(e,ev)=>{if(ev.target===e)closeModal()}
 };
+async function saveFile(name,data,type){
+ if(DL){try{await DL.save({filename:name,data});return}catch(e){try{await DL.save({filename:name,data:new Blob([data],{type})});return}catch(e2){toast('Téléchargement annulé');return}}}
+ try{const u=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('Fichier téléchargé')}catch(e){copyText(data)}
+}
 function etaFor(o){if(!o.transport||!o.shipDate)return '';const [h,m]=(o.shipTime||'06:00').split(':').map(Number);const d=new Date(o.shipDate+'T00:00:00');const one=o.transport.km/num(S.settings.speed)+num(S.settings.loadMin)/60;d.setHours(h,m+Math.round(one*60));return d.toISOString()}
 const FORMS={
  login:async(f,fd)=>{if(await checkCode(fd.get('code'))){ADMIN=true;try{sessionStorage.setItem('mp_adm','1')}catch(e){}if(location.hash==='#admin')render();else location.hash='#admin'}else toast('Code incorrect')},
- watch:(f,fd)=>{S.watch.push({id:uid(),espece:fd.get('espece').trim(),kind:fd.get('kind'),sens:fd.get('sens'),seuil:num(fd.get('seuil')),criee:fd.get('criee')});save('watch');render()},
+ watch:(f,fd)=>{sub.alertSp='';S.watch.push({id:uid(),espece:fd.get('espece').trim(),kind:fd.get('kind'),sens:fd.get('sens'),seuil:num(fd.get('seuil')),criee:fd.get('criee')});save('watch');render()},
  company:(f,fd)=>{for(const [k,v] of fd.entries())S.settings[k]=v;save('settings');toast('Enregistré');render()},
  code:async(f,fd)=>{if(!(await checkCode(fd.get('old')))){toast('Code actuel incorrect');return}const a=fd.get('n1'),b=fd.get('n2');if(a!==b){toast('Les deux codes ne correspondent pas');return}if(a.length<4||a==='12345'){toast('Choisissez un code d\'au moins 4 caractères, différent de 12345');return}S.settings.codeHash=await sha('maree:'+a);save('settings');toast('Code modifié');render()},
  src:(f,fd)=>{const id=f.dataset.id;const c=S.criees[id]=S.criees[id]||{};c.sources=c.sources||[];c.sources.push({label:fd.get('label'),url:fd.get('url')});save('criees');render()},
@@ -1161,10 +1302,16 @@ const FORMS={
 async function readImage(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>{if(file.type==='image/svg+xml'){res(fr.result);return}const img=new Image();img.onload=()=>{const s=256,c=document.createElement('canvas');const k=Math.min(s/img.width,s/img.height,1);c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);res(c.toDataURL('image/png'))};img.onerror=rej;img.src=fr.result};fr.onerror=rej;fr.readAsDataURL(file)})}
 
 /* ============ Événements ============ */
-document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act]');if(!el)return;const fn=A[el.dataset.act];if(!fn)return;if(el.tagName==='BUTTON'||el.tagName==='A'&&el.dataset.act!=='opencriee')ev.preventDefault?.();fn(el,ev)});
+document.addEventListener('click',ev=>{
+ if(ev.target.closest('input,select,textarea,label'))return;
+ const hr=ev.target.closest('[data-href]');if(hr&&!ev.target.closest('[data-act]')){location.hash=hr.dataset.href;return}
+ const row=ev.target.closest('.it');if(row&&!ev.target.closest('[data-act],a,button')){const b=[...row.querySelectorAll('button[data-act]')].find(x=>!x.classList.contains('danger'));if(b){b.click();return}}
+ const el=ev.target.closest('[data-act]');if(!el)return;const fn=A[el.dataset.act];if(!fn)return;if(el.tagName==='BUTTON'||el.tagName==='A'&&el.dataset.act!=='opencriee')ev.preventDefault?.();fn(el,ev)});
 document.addEventListener('submit',ev=>{const f=ev.target;if(!f.dataset.form)return;ev.preventDefault();const fn=FORMS[f.dataset.form];if(fn)fn(f,new FormData(f))});
 document.addEventListener('change',async ev=>{const el=ev.target;
  if(el.dataset.change==='criee'&&view==='resultats'){sub.criee=el.value;render();return}
+ if(el.dataset.change==='calall'){sub.calAll=el.checked;render();return}
+ if(el.dataset.change==='mapsp'){sub.mapSp=el.value;sub.mapZone='';render();return}
  if(el.dataset.change==='cstatus'){const c=S.criees[el.dataset.id]=S.criees[el.dataset.id]||{};c.status=el.value;save('criees');render();return}
  if(el.dataset.change==='docstat'){const d=S.docs.find(x=>x.id===el.dataset.id);d.statut=el.value;save('docs');render();toast('Statut : '+el.value);return}
  if(el.dataset.conso){const p=S.consoPrices[el.dataset.conso]=S.consoPrices[el.dataset.conso]||{};p[el.dataset.k]=el.value;save('consoPrices');render();return}
