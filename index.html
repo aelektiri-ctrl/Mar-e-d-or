@@ -24,7 +24,7 @@ header.top .logo img,header.top .logo svg{width:100%;height:100%;display:block;o
 header.top h1{font-family:var(--serif);font-size:21px;margin:0;font-weight:600;letter-spacing:.4px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--gold2);line-height:1.05}
 header.top .sub{font-family:Inter,sans-serif;font-size:10px;color:var(--muted);font-weight:600;letter-spacing:1.4px;text-transform:uppercase}
 header.top button{background:transparent;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:6px 10px;font:inherit;font-size:12px}
-.sync{font-size:10px;padding:3px 8px;border-radius:20px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.sync{font:inherit;font-size:10px;padding:4px 9px;border-radius:20px;border:1px solid var(--line);color:var(--muted);white-space:nowrap;background:transparent;cursor:pointer}
 main{position:relative;z-index:1;padding:14px 12px calc(86px + env(safe-area-inset-bottom));max-width:980px;margin:0 auto}
 nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:20;background:rgba(7,11,18,.95);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line2);display:flex;padding-bottom:env(safe-area-inset-bottom)}
 nav.tabs a{flex:1;text-align:center;padding:9px 2px 10px;color:var(--muted);text-decoration:none;font-size:10.5px;font-weight:600;letter-spacing:.2px;position:relative}
@@ -179,6 +179,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .map .zl{fill:#CFE9DF;font-family:Inter,sans-serif;font-weight:600;text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:#060C15;stroke-width:2.4px}
 .map .cd{fill:#F0D48A;stroke:#060C15;stroke-width:.8}
 .map .cl{fill:#E6D6AE;font-family:Inter,sans-serif;paint-order:stroke;stroke:#060C15;stroke-width:2px}
+.map .pd{fill:#14B88A;stroke:#060C15;stroke-width:.6}.map .pl{fill:#9BE7CC;font-family:Inter,sans-serif;paint-order:stroke;stroke:#060C15;stroke-width:2px}
 .map .hv{fill:#14B88A;font-family:Inter,sans-serif;font-weight:700;paint-order:stroke;stroke:#060C15;stroke-width:2px}
 button.tag{font:inherit;font-size:11px;font-weight:600;cursor:pointer;padding:4px 10px}
 [data-href],[data-act]{cursor:pointer}
@@ -200,6 +201,7 @@ tr[data-act]:active td{background:rgba(212,175,90,.06)}
 .tick.on{border-color:var(--gold3);box-shadow:0 0 0 1px var(--gold3) inset}.tick span{font-size:11px;color:var(--muted);white-space:nowrap}.tick b{font-size:16px;color:var(--gold2)}.tick i{font-style:normal;font-size:11px;font-weight:600}
 .mercprev{background:#070C14;border:1px solid var(--line);border-radius:12px;padding:14px}
 .hero .ver{position:absolute;right:14px;bottom:10px;font-size:10px;letter-spacing:1px;color:#8D9AAD;z-index:2}
+.flash{animation:flash 1.3s ease}@keyframes flash{0%,100%{box-shadow:0 0 0 0 rgba(212,175,90,0)}25%{box-shadow:0 0 0 3px rgba(212,175,90,.75)}}
 </style>
 </head>
 <body>
@@ -366,9 +368,9 @@ const CNY={2026:'2026-02-17',2027:'2027-02-06',2028:'2028-01-26',2029:'2029-02-1
 /* ============ État & stockage ============ */
 const DEF_SETTINGS={appName:"Marée d'Or",raison:'',forme:'',siret:'',tva:'',naf:'',adresse:'',cp:'',ville:'Le Havre',email:'',tel:'',iban:'',bic:'',logo:'',codeHash:'',defaultCriee:'fecamp',refreshMin:5,serverUrl:'',serverKey:'',
  origin:'Le Havre',fuelPrice:1.75,conso:11,peageKm:0.12,autorouteShare:60,driverRate:28,speed:72,loadMin:30,frigoH:3.5,vehicleKm:0.18,routeFactor:1.28,
- usdEur:0.90,cnyEur:0.125,duty:3,vatImport:20,insurance:0.5,customsFee:150,minMargin:10,payDays:30,vatFish:5.5,coldMax:2,cashStart:0,mercCoef:1.6,wxCriee:'',nextA:{},resaleCoef:1.7,transportKg:0.45,calVol:50,targetPct:8,maxPct:10,devisValid:15,nextD:{},nextF:{}};
-const S={lots:[],suppliers:[],cold:[],expenses:[],tasks:[],merc:{week:'',lines:[],note:''},fleet:[],follow:{},contacts:[],sourcing:{},settings:{...DEF_SETTINGS},criees:{},clients:[],prospects:[],orders:[],docs:[],imports:[],disruptions:[],watch:[],carriers:[],consoPrices:{},results:{}};
-const KEYS=['settings','criees','clients','prospects','orders','docs','imports','disruptions','watch','carriers','consoPrices','sourcing','lots','suppliers','cold','expenses','tasks','merc','fleet','follow','contacts'];
+ usdEur:0.90,cnyEur:0.125,duty:3,vatImport:20,insurance:0.5,customsFee:150,minMargin:10,payDays:30,vatFish:5.5,coldMax:2,cashStart:0,formEndpoint:'',mercCoef:1.6,wxCriee:'',nextA:{},resaleCoef:1.7,transportKg:0.45,calVol:50,targetPct:8,maxPct:10,devisValid:15,nextD:{},nextF:{}};
+const S={restoEdits:{},inbox:[],lots:[],suppliers:[],cold:[],expenses:[],tasks:[],merc:{week:'',lines:[],note:''},fleet:[],follow:{},contacts:[],sourcing:{},settings:{...DEF_SETTINGS},criees:{},clients:[],prospects:[],orders:[],docs:[],imports:[],disruptions:[],watch:[],carriers:[],consoPrices:{},results:{}};
+const KEYS=['settings','criees','clients','prospects','orders','docs','imports','disruptions','watch','carriers','consoPrices','sourcing','lots','suppliers','cold','expenses','tasks','merc','fleet','follow','contacts','restoEdits','inbox'];
 let DB=null,UID=null,OWNER=false,MODE='local',DL=null;
 const lsGet=k=>{try{const v=localStorage.getItem('mp_'+k);return v==null?undefined:JSON.parse(v)}catch(e){return undefined}};
 const lsSet=(k,v)=>{try{localStorage.setItem('mp_'+k,JSON.stringify(v))}catch(e){}};
@@ -376,7 +378,7 @@ const merge=(k,v)=>{if(k!=='settings')return v;const o={...DEF_SETTINGS,...v};if
 async function dbRead(ref){try{const s=await ref.get();if(!s||s.exists===false)return undefined;let d=typeof s.data==='function'?s.data():('data' in s?s.data:s);if(d&&typeof d.json==='string')return JSON.parse(d.json)}catch(e){console.warn('read',e)}return undefined}
 const saveT={},saving={},dirty={};
 function save(k){lsSet(k,S[k]);if(!DB)return;clearTimeout(saveT[k]);saveT[k]=setTimeout(()=>flush(k),500)}
-async function flush(k){if(k==='fleet'&&JSON.stringify(S.fleet).length>900000)return;if(saving[k]){dirty[k]=1;return}saving[k]=1;try{await DB.collection('data/users/'+UID).doc(k).set({json:JSON.stringify(S[k]),at:Date.now()})}catch(e){console.warn(e);toast('Échec de synchronisation ('+k+')')}saving[k]=0;if(dirty[k]){dirty[k]=0;flush(k)}}
+async function flush(k){if(k==='fleet'&&JSON.stringify(S.fleet).length>900000)return;if(saving[k]){dirty[k]=1;return}saving[k]=1;try{await DB.collection('data/users/'+UID).doc(k).set({json:JSON.stringify(S[k]),at:Date.now()});window.__lastSync=Date.now()}catch(e){console.warn(e);toast('Échec de synchronisation ('+k+')')}saving[k]=0;if(dirty[k]){dirty[k]=0;flush(k)}}
 async function publishResults(cid){lsSet('results',S.results);if(!DB)return;try{await DB.collection('public').doc('r_'+cid).set({json:JSON.stringify(S.results[cid]),at:Date.now()});await DB.collection('public').doc('index').set({json:JSON.stringify(Object.keys(S.results)),at:Date.now()})}catch(e){console.warn(e);toast('Publication des résultats refusée (droits)')}}
 async function initStore(){
  for(const k of KEYS){const v=lsGet(k);if(v!==undefined)S[k]=merge(k,v)}
@@ -393,7 +395,7 @@ async function initStore(){
     await Promise.all(KEYS.map(async k=>{const v=await dbRead(col.doc(k));if(v!==undefined){S[k]=merge(k,v);lsSet(k,S[k])}else if(lsGet(k)!==undefined)flush(k)}));
     const idx=await dbRead(db.collection('public').doc('index'));
     if(Array.isArray(idx))await Promise.all(idx.map(async cid=>{const v=await dbRead(db.collection('public').doc('r_'+cid));if(v)S.results[cid]=v}));
-    lsSet('results',S.results);
+    lsSet('results',S.results);window.__lastSync=Date.now();
    }
   }
  }catch(e){console.warn(e)}
@@ -504,7 +506,9 @@ function planOrder(needISO,prodDays,transitDays,buffer){
 let view='resultats',sub={};
 const ADMIN_PAGES=[
  ['adm-entreprise','Entreprise & appli','SIRET, logo, nom, code','building'],
+ ['adm-messages','Messages reçus','Formulaire de contact','users'],
  ['adm-criees','Criées de France','36 criées, API, sources','anchor'],
+ ['adm-acces',"Demandes d'accès",'Criées & petits ports, modèles','doc'],
  ['adm-agenda','Agenda','Tâches, échéances, DLC','calendar'],
  ['adm-clients','Clients','Fichier clients','users'],
  ['adm-prospection','Démarchage','Chefs, palaces, relances','target'],
@@ -519,7 +523,7 @@ const ADMIN_PAGES=[
  ['adm-calendrier','Calendrier des pêches','Saisons, prix, marges','calendar'],
  ['adm-filetage','Rendement filetage','Vrai prix au kilo de chair','fish'],
  ['adm-flotte','Bateaux & contacts','Flotte, en mer, organisations','anchor'],
- ['adm-consommables','Consommables chalutiers','Fiches, prix France / Chine','wrench'],
+ ['adm-consommables','Consommables & équipements','Prix, fournisseurs monde','wrench'],
  ['adm-chine','Import & sourcing mondial','Pays, coût rendu, rentabilité','globe'],
  ['adm-reglages','Réglages & sauvegarde','API, serveur, export','gear'],
  ['guide',"Mode d'emploi",'Toutes les fonctions','book']
@@ -527,11 +531,11 @@ const ADMIN_PAGES=[
 function header(){
  const st=S.settings;const logo=st.logo?`<img src="${esc(st.logo)}" alt="">`:LOGO_SVG;
  const isAdm=view.startsWith('adm')||view==='admin';
- $('#hdr').innerHTML=`<div class="logo">${logo}</div><h1>${esc(st.appName||"Marée d'Or")}<div class="sub">${isAdm&&ADMIN?'Espace administrateur':'Criées · Négoce · Marée'}</div></h1><span class="sync">${MODE==='cloud'?'Synchronisé':'Local'}</span>${ADMIN&&isAdm?'<button data-act="logout">Quitter</button>':''}`;
+ $('#hdr').innerHTML=`<div class="logo">${logo}</div><h1>${esc(st.appName||"Marée d'Or")}<div class="sub">${isAdm&&ADMIN?'Espace administrateur':'Criées · Négoce · Marée'}</div></h1><button class="sync" data-act="syncinfo">${MODE==='cloud'?'Synchronisé':'Local'} ›</button>${ADMIN&&isAdm?'<button data-act="logout">Quitter</button>':''}`;
 }
 function tabs(){
  const t=[['accueil','Accueil',I.home],['resultats','Criées',I.fish],['alertes','Alertes',I.bell],['compte','Compte',I.user],['admin','Admin',ADMIN?I.grid:I.lock]];
- const cur=view.startsWith('adm')?'admin':['guide'].includes(view)?'compte':['especes','carte','saisons','identification'].includes(view)?'accueil':view;
+ const cur=view.startsWith('adm')?'admin':['guide','contact'].includes(view)?'compte':['especes','carte','saisons','identification'].includes(view)?'accueil':view;
  $('#tabs').innerHTML=t.map(([h,l,ic])=>`<a href="#${h}" class="${cur===h?'on':''}">${ic}${l}</a>`).join('');
 }
 function render(){
@@ -543,6 +547,7 @@ function render(){
   else if(h==='guide')html=vGuide();
   else if(h==='especes')html=vSpecies();
   else if(h==='saisons')html=vSeasons();
+  else if(h==='contact')html=vContact();
   else if(h==='identification')html=vIdent();
   else if(h==='carte')html=vMap();
   else if(h==='resultats')html=vResults();
@@ -550,7 +555,7 @@ function render(){
   else if(h==='admin'||h.startsWith('adm')){
    if(!ADMIN)html=vLogin();
    else if(h==='admin')html=vAdminHome();
-   else{const fn={'adm-entreprise':vCompany,'adm-criees':vCriees,'adm-clients':vClients,'adm-prospection':vProspects,'adm-commandes':vOrders,'adm-devis':vDocs,'adm-ca':vCA,'adm-expedition':vShip,'adm-consommables':vConso2,'adm-achats':vPurch,'adm-finance':vFinance,'adm-agenda':vAgenda,'adm-mercuriale':vMerc,'adm-marche':vMarket,'adm-filetage':vFillet,'adm-flotte':vFleet,'adm-calendrier':vCalendar,'adm-chine':vChina,'adm-reglages':vSettings}[h];html=fn?fn():vAdminHome()}
+   else{const fn={'adm-entreprise':vCompany,'adm-criees':vCriees,'adm-clients':vClients,'adm-prospection':vProspects,'adm-commandes':vOrders,'adm-devis':vDocs,'adm-ca':vCA,'adm-expedition':vShip,'adm-consommables':vConso2,'adm-achats':vPurch,'adm-finance':vFinance,'adm-agenda':vAgenda,'adm-mercuriale':vMerc,'adm-marche':vMarket,'adm-filetage':vFillet,'adm-flotte':vFleet,'adm-acces':vAccess,'adm-messages':vInbox,'adm-calendrier':vCalendar,'adm-chine':vChina,'adm-reglages':vSettings}[h];html=fn?fn():vAdminHome()}
   }else html=vHome();
  }catch(e){console.error(e);html=`<div class="banner bad">Erreur d'affichage : ${esc(e.message)}</div>`}
  $('#app').innerHTML=html;
@@ -608,7 +613,7 @@ function vAdminHome(){
  const rel=S.prospects.filter(p=>p.relance&&p.relance<=todayISO()&&!['gagné','perdu'].includes(p.statut)).length;
  const missing=[];const st=S.settings;if(!st.siret)missing.push('SIRET');if(!st.raison)missing.push('raison sociale');if(!st.adresse)missing.push('adresse');
  return `${usingDefaultCode()?`<div class="banner warn"><b>Changez le code d'accès 12345.</b> <a href="#adm-entreprise">Le modifier maintenant</a></div>`:''}
- ${missing.length?`<div class="banner info">Pour émettre devis et factures, complétez : ${missing.join(', ')}. <a href="#adm-entreprise">Compléter</a></div>`:''}
+ ${(S.inbox||[]).some(m=>!m.read)?`<div class="banner ok" data-href="#adm-messages">${(S.inbox||[]).filter(m=>!m.read).length} nouveau(x) message(s) reçu(s). <a href="#adm-messages">Lire</a></div>`:''}${missing.length?`<div class="banner info">Pour émettre devis et factures, complétez : ${missing.join(', ')}. <a href="#adm-entreprise">Compléter</a></div>`:''}
  <div class="kpis"><div class="kpi" data-href="#adm-ca"><div class="l">CA du mois (HT)</div><div class="v">${eur(caM)}</div></div><div class="kpi" data-href="#adm-devis"><div class="l">À encaisser (TTC)</div><div class="v">${eur(unpaid)}</div></div><div class="kpi" data-href="#adm-commandes"><div class="l">Commandes en cours</div><div class="v">${open}</div></div><div class="kpi" data-href="#adm-prospection"><div class="l">Relances du jour</div><div class="v">${rel}</div></div></div>
  <div class="tiles">${ADMIN_PAGES.map(([h,t,s,ic])=>`<a class="tile" href="#${h}"><div class="ic">${I[ic]}</div><b>${t}</b><span>${s}</span></a>`).join('')}</div><p class="tiny" style="text-align:center;margin-top:14px">${esc(S.settings.appName)} · version ${APP_VERSION} · ${APP_DATE}</p>`;
 }
@@ -700,12 +705,12 @@ function vProspects(){
  const tab=sub.ptab||'pipe';
  const head=back()+`<h2>Démarchage</h2><div class="seg" style="margin-bottom:12px"><button data-act="ptab" data-v="pipe" class="${tab==='pipe'?'on':''}">Mes prospects (${S.prospects.length})</button><button data-act="ptab" data-v="base" class="${tab==='base'?'on':''}">Base chefs & palaces</button></div>`;
  if(tab==='base'){
-  const z=sub.zone||'';const list=RESTOS.filter(r=>!z||r.zone===z);const have=new Set(S.prospects.map(p=>p.ref));
-  return head+`<div class="banner info small">Établissements de référence (gastronomie, palaces, produits de la mer). Les noms des chefs changent : vérifiez avant de contacter. Les coordonnées se trouvent via les liens (standard, e-mail de contact publics).</div>
-  <div class="pill-filter"><button data-act="zone" data-v="" class="${!z?'on':''}">Toutes</button>${ZONES.map(x=>`<button data-act="zone" data-v="${x}" class="${z===x?'on':''}">${x}</button>`).join('')}</div>
-  <div class="card list">${list.map(r=>`<div class="it"><div class="grow"><div class="t">${esc(r.nom)}</div><div class="small muted">${r.chef!=='—'?'Chef : '+esc(r.chef)+' · ':''}${esc(r.ville)} · ${esc(r.type)}</div><div class="row small" style="margin-top:4px"><a href="${gsearch(r.nom+' '+r.ville+' contact')}" target="_blank" rel="noopener">Contact</a><a href="${gmaps(r.nom+' '+r.ville)}" target="_blank" rel="noopener">Carte</a></div></div>${have.has(r.ref)?'<span class="tag ok">Ajouté</span>':`<button class="btn sm" data-act="addprospect" data-id="${r.ref}">+ Ajouter</button>`}</div>`).join('')}</div>
-  <div class="card"><h3>Trouver d'autres établissements</h3><div class="row">${ZONES.map(x=>`<a class="btn sec sm" href="${gsearch('restaurant étoilé Michelin '+x+' poisson')}" target="_blank" rel="noopener">${x}</a>`).join('')}</div></div>
-  <div class="card small muted"><b>Règles de prospection.</b> France : la prospection B2B par e-mail est permise si le message concerne l'activité du destinataire, avec un moyen simple de se désinscrire (CNIL). Suisse : la loi contre la concurrence déloyale encadre les envois de masse – privilégiez le contact personnalisé et proposez toujours le désabonnement.</div>`;
+  const seg=sub.rseg||'mer';const all=allRestos().filter(r=>r.seg===seg);const zs=[...new Set(all.map(r=>r.zone))];const z=zs.includes(sub.zone)?sub.zone:'';const list=all.filter(r=>!z||r.zone===z);const have=new Set(S.prospects.map(p=>p.ref));
+  return head+`<div class="seg" style="margin-bottom:10px"><button data-act="rseg" data-v="mer" class="${seg==='mer'?'on':''}">Grandes tables de la mer</button><button data-act="rseg" data-v="palace" class="${seg==='palace'?'on':''}">Palaces & Relais & Châteaux</button></div>
+  <div class="pill-filter"><button data-act="zone" data-v="" class="${!z?'on':''}">Toutes (${all.length})</button>${zs.map(x=>`<button data-act="zone" data-v="${esc(x)}" class="${z===x?'on':''}">${esc(x)}</button>`).join('')}</div>
+  <div class="card list">${list.map(r=>`<div class="it" style="flex-wrap:wrap"><div class="grow"><div class="t">${esc(r.nom)}</div><div class="small">${r.chef?`Chef : <b class="gold">${esc(r.chef)}</b> ${r.v?'<span class="tag ok">vérifié</span>':'<span class="tag warn">à vérifier</span>'}`:'<span class="tag warn">Chef à renseigner</span>'}</div><div class="small muted">${esc(r.ville)} · ${esc(r.zone)}${r.rc?' · <span class="gold">Relais & Châteaux</span>':''}</div></div><div class="row" style="flex-basis:100%;margin-top:6px">${have.has(r.ref)?'<span class="tag ok">Dans mes prospects</span>':`<button class="btn sm" data-act="addprospect" data-id="${r.ref}">+ Prospect</button>`}<button class="btn sec sm" data-act="editchef" data-id="${r.ref}">${r.chef?'Corriger':'Renseigner'} le chef</button><a class="btn sec sm" href="${gsearch(r.nom+' '+r.ville+' chef')}" target="_blank" rel="noopener">Vérifier</a><a class="btn sec sm" href="${gmaps(r.nom+' '+r.ville)}" target="_blank" rel="noopener">Carte</a></div></div>`).join('')}</div>
+  <div class="card"><h3>Trouver d'autres tables</h3><div class="row">${(seg==='mer'?['restaurant poisson étoilé Côte d’Azur','restaurant fruits de mer étoilé Bretagne','restaurant poisson étoilé Normandie','restaurant poisson gastronomique Paris','restaurant poisson étoilé Pays basque']:['Relais & Châteaux Normandie','Relais & Châteaux Bretagne','Relais & Châteaux Côte d’Azur','palace France restaurant chef']).map(x=>`<a class="btn sec sm" href="${gsearch(x)}" target="_blank" rel="noopener">${esc(x)}</a>`).join('')}</div></div>
+  <p class="tiny">« Vérifié » : chef confirmé par une source 2026 (Gault&Millau, guide Michelin, presse). Les chefs changent : vérifiez avant un rendez-vous. Pas de coordonnées personnelles : passez par l'établissement.</p>`;
  }
  const s=sub.pst||'';const list=S.prospects.filter(p=>!s||p.statut===s).sort((a,b)=>(a.relance||'9')<(b.relance||'9')?-1:1);
  const pitch=`Bonjour Chef,
@@ -815,14 +820,6 @@ function liveShip(){
  ${S.orders.length?`<div class="row"><select id="shipOrder" class="grow">${S.orders.filter(o=>o.statut!=='annulée').map(o=>opt(o.id,o.num+' · '+clientName(o.clientId),'')).join('')}</select><button class="btn sm" data-act="shiptoorder">Affecter à la commande</button></div>`:''}`;
 }
 /* ---- Consommables ---- */
-function vConso(){
- return back()+`<h2>Consommables chalutiers</h2><div class="banner info small">Notez les prix fournisseurs européens et chinois : l'écart s'affiche et vous pouvez lancer le calcul d'import complet. Faites toujours tester les pièces (qualité de l'acier, dureté) avant de les revendre.</div>
- ${CONSO.map(c=>{const p=S.consoPrices[c.id]||{};const eu=num(p.eu),cn=num(p.cn);const gap=eu&&cn?(eu-cn)/eu*100:null;return `<div class="card"><div class="row"><div class="grow"><b>${esc(c.nom)}</b><div class="small muted">${esc(c.metier)} · usure : ${esc(c.usure)}</div></div>${gap!==null?`<span class="tag ${gap>30?'ok':gap>0?'warn':'bad'}">Chine ${gap>=0?'-':'+'}${fmt(Math.abs(gap),0)} %</span>`:''}</div>
- <div class="row small" style="margin:8px 0"><a href="https://www.alibaba.com/trade/search?SearchText=${q(c.en)}" target="_blank" rel="noopener">Alibaba</a><a href="https://s.1688.com/selloffer/offer_search.htm?keywords=${q(c.en)}" target="_blank" rel="noopener">1688</a><a href="${gsearch('site:made-in-china.com '+c.en)}" target="_blank" rel="noopener">Made-in-China</a><a href="${gsearch(c.nom+' fournisseur pêche professionnelle')}" target="_blank" rel="noopener">Fournisseurs Europe</a></div>
- <div class="grid3"><div class="f"><label>Prix UE € / unité</label><input inputmode="decimal" value="${esc(p.eu||'')}" data-conso="${c.id}" data-k="eu"></div><div class="f"><label>Prix Chine € / unité</label><input inputmode="decimal" value="${esc(p.cn||'')}" data-conso="${c.id}" data-k="cn"></div><div class="f"><label>Fournisseur retenu</label><input value="${esc(p.sup||'')}" data-conso="${c.id}" data-k="sup"></div></div>
- <button class="btn sec sm" data-act="conso2china" data-id="${c.id}">Calculer l'import complet</button></div>`}).join('')}
- <div class="card"><h3>Fabricants européens de référence</h3>${EU_SUPPLIERS.map(([n,d])=>`<div class="kv"><span><b>${esc(n)}</b><br><span class="small muted">${esc(d)}</span></span><a class="btn sec sm" href="${gsearch(n+' '+d.split(' – ')[0])}" target="_blank" rel="noopener">Site</a></div>`).join('')}</div>`;
-}
 /* ---- Import Chine ---- */
 function defImport(){return{article:'',qty:100,unit:'',cur:'USD',tooling:0,weight:'',cbm:'',euPrice:'',need:addDays(todayISO(),90),prod:20,buffer:7,post:0,quotes:[{name:'Mer FCL/LCL',mode:'Mer',port:'Shanghai',cost:'',days:40},{name:'Ferroviaire + camion',mode:'Rail',port:'Xi\'an',cost:'',days:25},{name:'Aérien',mode:'Air',port:'Shanghai PVG',cost:'',days:6}]}}
 function vChina(){
@@ -1011,8 +1008,7 @@ function heroSVG(){
 function partImg(c){
  const own=(S.consoPrices[c.id]||{}).photo;
  if(own)return `<img src="${esc(own)}" alt="${esc(c.nom)}">`;
- if(c.ph&&PHOTOS[c.ph])return `<img src="${commons(PHOTOS[c.ph].file)}" alt="${esc(c.nom)}" data-fb="${c.il}" loading="lazy" referrerpolicy="no-referrer">`;
- return ILLUS[c.il]||'';
+ return photoHTML('c:'+c.id,ILLUS[c.il]);
 }
 const stars5=q=>{let s='';for(let i=1;i<=5;i++)s+=`<span style="color:${q>=i?'#F0D48A':q>=i-.5?'#B8954A':'#2A3647'}">★</span>`;return s};
 
@@ -1029,22 +1025,23 @@ function vHome(){
  ${(()=>{const s=weatherSignal();return s?`<div class="banner ${s.lvl==='ok'?'ok':s.lvl==='warn'?'warn':'bad'} small" data-href="#adm-marche">${esc(s.t)}</div>`:''})()}<div class="card"><div class="row"><h3 class="grow" style="margin:0 0 10px">En saison ce mois-ci</h3><a class="small" href="#saisons">Tout voir ›</a></div><div class="row">${season.map(s=>`<button class="tag acc" data-act="species" data-v="${esc(s.n)}">${esc(s.n)}</button>`).join('')}</div>${closed.length?`<p class="small muted" style="margin:10px 0 0">Fermé ce mois-ci : ${closed.map(s=>`<a href="#especes" data-act="species" data-v="${esc(s.n)}">${esc(s.n)}</a>`).join(', ')}.</p>`:''}</div>
  <div class="card"><div class="row"><h3 class="grow" style="margin:0">Derniers cours · ${esc(c.nom)}</h3><a class="small" href="#resultats">Tout voir ›</a></div>
  ${top.length?`<div class="tw" style="margin-top:8px"><table><thead><tr><th>Espèce</th><th class="n">Kg</th><th class="n">€/kg</th></tr></thead><tbody>${top.map(r=>`<tr><td data-act="spl" data-v="${esc(r.espece)}">${esc(r.espece)} <span class="muted small">${esc(r.calibre)}</span></td><td class="n">${fmt(r.kg,0)}</td><td class="n gold"><b>${fmt(r.prix)}</b></td></tr>`).join('')}</tbody></table></div>`:`<p class="small muted" style="margin:8px 0 0">Les cours s'afficheront ici dès qu'une source sera branchée (Admin › Criées de France).</p>`}</div>
- <div class="tiles"><a class="tile" href="#resultats"><div class="ic">${I.fish}</div><b>Résultats des criées</b><span>Apports et prix</span></a><a class="tile" href="#alertes"><div class="ic">${I.bell}</div><b>Alertes</b><span>Seuils de prix</span></a><a class="tile" href="#carte"><div class="ic">${I.globe}</div><b>Carte maritime</b><span>Zones de pêche</span></a><a class="tile" href="#saisons"><div class="ic">${I.calendar}</div><b>Saisons</b><span>Espèces mois par mois</span></a><a class="tile" href="#identification"><div class="ic">${I.fish}</div><b>Identification</b><span>Photos des espèces</span></a><a class="tile" href="#especes"><div class="ic">${I.book}</div><b>Fiches espèces</b><span>Techniques, matériel</span></a><a class="tile" href="#guide"><div class="ic">${I.book}</div><b>Mode d'emploi</b><span>Tout comprendre</span></a></div>`;
+ <div class="tiles"><a class="tile" href="#resultats"><div class="ic">${I.fish}</div><b>Résultats des criées</b><span>Apports et prix</span></a><a class="tile" href="#alertes"><div class="ic">${I.bell}</div><b>Alertes</b><span>Seuils de prix</span></a><a class="tile" href="#carte"><div class="ic">${I.globe}</div><b>Carte maritime</b><span>Zones de pêche</span></a><a class="tile" href="#saisons"><div class="ic">${I.calendar}</div><b>Saisons</b><span>Espèces mois par mois</span></a><a class="tile" href="#identification"><div class="ic">${I.fish}</div><b>Identification</b><span>Photos des espèces</span></a><a class="tile" href="#especes"><div class="ic">${I.book}</div><b>Fiches espèces</b><span>Techniques, matériel</span></a><a class="tile" href="#guide"><div class="ic">${I.book}</div><b>Mode d'emploi</b><span>Tout comprendre</span></a><a class="tile" href="#contact"><div class="ic">${I.users}</div><b>Nous contacter</b><span>Écrivez-nous</span></a></div>`;
 }
 function vAccount(){
  const st=S.settings;
  return `<h2>Mon compte</h2><div class="card"><div class="row"><div style="width:56px;height:56px">${st.logo?`<img src="${esc(st.logo)}" style="width:100%;height:100%;object-fit:contain">`:LOGO_SVG}</div><div class="grow"><div style="font-family:var(--serif);font-size:22px;color:var(--gold2)">${esc(st.appName)}</div><div class="small muted">${esc(st.raison||'Société non renseignée')}${st.siret?' · SIRET '+esc(st.siret):''}</div></div></div>
  <div class="hr"></div><div class="kv"><span>Version</span><b class="gold">${APP_VERSION} · ${APP_DATE}</b></div><div class="kv"><span>Stockage</span><b>${MODE==='cloud'?'Synchronisé entre vos appareils':'Sur cet appareil'}</b></div><div class="kv"><span>Accès administrateur</span><b>${ADMIN?'Ouvert':'Verrouillé'}</b></div></div>
  <div class="card"><h3>Installer l'application</h3><ol class="small" style="padding-left:18px;margin:0 0 8px"><li>Ouvrez le lien de l'application dans Chrome.</li><li>Menu ⋮ → <b>Installer l'application</b> ou <b>Ajouter à l'écran d'accueil</b>.</li></ol><p class="small muted" style="margin:0">Version autonome (sans compte Claude) : voir Mode d'emploi › Version autonome.</p></div>
- <div class="tiles" style="margin-bottom:12px"><a class="tile" href="#guide"><div class="ic">${I.book}</div><b>Mode d'emploi</b><span>Toutes les fonctions</span></a><a class="tile" href="#admin"><div class="ic">${I.lock}</div><b>Administration</b><span>Accès par code</span></a></div>
- <div class="card"><h3>Crédits photos</h3><p class="small muted">Photos libres issues de Wikimedia Commons. Les autres visuels sont des illustrations originales de l'application.</p>${Object.values(PHOTOS).map(p=>`<div class="kv small"><span>${esc(p.file.replace(/_/g,' '))}<br><span class="muted">${esc(p.author)}</span></span><span class="muted" style="text-align:right">${esc(p.lic)}<br><a href="https://commons.wikimedia.org/wiki/File:${esc(p.file)}" target="_blank" rel="noopener">Source</a></span></div>`).join('')}
- ${Object.entries(PHOTO_CACHE).filter(([n,c])=>c&&c.src).map(([n,c])=>`<div class="kv small"><span>${esc(n)}<br><span class="muted">${esc(c.artist||'Auteur sur Wikimedia Commons')}</span></span><span class="muted" style="text-align:right">${esc(c.lic||'')}<br><a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(c.file||'')}" target="_blank" rel="noopener">Source</a></span></div>`).join('')}<p class="small muted" style="margin-bottom:0">Prix moyens des espèces : FranceAgriMer / VISIOMer, ventes en halles à marée 2024.</p></div>`;
+ <div class="tiles" style="margin-bottom:12px"><a class="tile" href="#contact"><div class="ic">${I.users}</div><b>Nous contacter</b><span>Envoyer un message</span></a><a class="tile" href="#guide"><div class="ic">${I.book}</div><b>Mode d'emploi</b><span>Toutes les fonctions</span></a><a class="tile" href="#admin"><div class="ic">${I.lock}</div><b>Administration</b><span>Accès par code</span></a></div>
+ <div class="card"><h3>Crédits photos</h3><p class="small muted">Photos issues de Wikipédia / Wikimedia Commons, chargées à la première ouverture (version installée). Auteurs et licences :</p>${Object.values(PHOTO_CACHE).some(c=>c&&c.src)?'':'<p class="small muted">Aucune photo chargée pour le moment sur cet appareil.</p>'}
+ ${Object.entries(PHOTO_CACHE).filter(([n,c])=>c&&c.src).map(([n,c])=>`<div class="kv small"><span>${esc(n.startsWith('c:')?((CONSO2.find(x=>'c:'+x.id===n)||{}).nom||n):n)}<br><span class="muted">${esc(c.artist||'Auteur sur Wikimedia Commons')}</span></span><span class="muted" style="text-align:right">${esc(c.lic||'')}<br><a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(c.file||'')}" target="_blank" rel="noopener">Source</a></span></div>`).join('')}<p class="small muted" style="margin-bottom:0">Prix moyens des espèces : FranceAgriMer / VISIOMer, ventes en halles à marée 2024.</p></div>`;
 }
 function vGuide(){
  const sec=(t,items)=>`<div class="card"><h3>${t}</h3><ol class="steps">${items.map(([b,s])=>`<li><b>${b}</b><span class="small muted">${s}</span></li>`).join('')}</ol></div>`;
  return `${ADMIN?back():''}<h2>Mode d'emploi</h2><p class="muted small">L'application a deux espaces : un espace public (Accueil, Criées, Alertes, Compte) et un espace Administrateur protégé par code.</p>
  ${sec('Premiers pas',[['Ouvrir l\'administration','Onglet Admin, code initial 12345.'],['Changer le code','Admin › Entreprise & appli › Code d\'accès. Faites-le tout de suite.'],['Renseigner la société','Raison sociale, SIRET, TVA, adresse, IBAN : ils apparaissent sur les devis et factures.'],['Nom et logo','Choisissez un nom (propositions fournies) et, si vous le souhaitez, chargez votre propre logo.']])}
  ${sec('Résultats des criées',[['Choisir la criée','Onglet Criées : liste des 36 halles à marée françaises.'],['Avant / après vente','« Avant vente » = apports annoncés (bateaux, espèces, volumes). « Après vente » = prix obtenus, avec la variation par rapport à la veille.'],['Brancher une source','Admin › Criées de France › une criée › Connexion API : collez l\'URL et la clé fournies par la criée, cochez l\'actualisation automatique.'],['Sans API','Importez le fichier CSV envoyé par la criée, ou saisissez les lignes à la main.'],['Demander l\'accès','Dans la fiche criée, « Copier le mail de demande d\'accès » prépare un e-mail complet avec votre SIRET.']])}
+ ${sec('Contact & demandes',[['Nous contacter','Les visiteurs écrivent depuis l’onglet Compte › Nous contacter. Les messages arrivent dans Admin › Messages reçus et, si vous avez configuré un formulaire en ligne, dans votre boîte e-mail.'],['Demandes d’accès','Admin › Demandes d’accès : pour chaque criée et petit port, le gestionnaire, les contacts publiés et une demande prête à copier ou à envoyer, avec votre SIRET.'],['Grandes tables','Démarchage › Base : deux compartiments, Grandes tables de la mer et Palaces & Relais & Châteaux, avec le nom du chef.']])}
  ${sec('Saisons & identification',[['Saisons','Accueil › Saisons : les espèces de chaque mois avec photo, ou le tableau annuel complet.'],['Identification','Accueil › Identification : galerie de photos par famille ; touchez une photo pour le nom et la fiche.']])}
  ${sec('Gestion',[['Achats & stock','Chaque achat crée un lot numéroté (traçabilité : zone FAO, engin, navire, DLC). Indiquez le lot sur les lignes de commande : le stock se déduit à l\'expédition.'],['Chaîne du froid','Relevés de température par lot et par étape, alerte au-dessus du seuil.'],['Finance','Marge par facture, dépenses, trésorerie, impayés avec relances graduées, export CSV pour le comptable.'],['Avoirs','Depuis une facture : « Créer un avoir », puis ajustez les lignes.'],['Agenda','Vos tâches + relances, expéditions, échéances et DLC automatiquement.']])}
  ${sec('Marché',[['Courbes','Admin › Marché & météo › Cours : évolution du prix par espèce, vert à la hausse, rouge à la baisse, sur 7 jours, 1 mois ou 1 an.'],['Tendances','Conseil Acheter / Attendre / Neutre, calculé à partir des cours, de la saison et de la météo. C\'est une estimation.'],['Météo & marées','Vent, rafales, vagues, température de l\'eau et marées estimées près de la criée choisie (version installée).'],['Mercuriale','Liste de prix de la semaine pour les chefs, envoyée par WhatsApp ou en page avec un bouton Commander.'],['Rendement','Prix réel au kilo de chair selon le rendement au filetage.'],['Bateaux','Annuaire importé du registre européen, suivi des bateaux en mer, organisations professionnelles, carnet de contacts.']])}
@@ -1079,15 +1076,16 @@ function vCalendar(){
  <p class="small muted">Prix moyens : FranceAgriMer / VISIOMer 2024. Quand vos criées transmettent des cours, le cours constaté remplace automatiquement le prix moyen. Saisons et réglementation indicatives : vérifiez les arrêtés en vigueur.</p>`;
 }
 function vConso2(){
- return back()+`<h2>Consommables chalutiers</h2><div class="banner info small">Tailles, poids et prix sont des <b>ordres de grandeur</b> à confirmer par devis. Saisissez vos vrais prix : ils remplacent les estimations dans le comparatif.</div>
- ${CONSO2.map(c=>{const p=S.consoPrices[c.id]||{};const fr=num(p.eu)||mid(c.fr),cn=num(p.cn)||mid(c.cn);const gap=fr&&cn?(fr-cn)/fr*100:null;
+ const ctab=sub.ctype||'tous';const LIST=CONSO2.filter(c=>ctab==='tous'||(ctab==='gros'?c.big:!c.big));
+ return back()+`<h2>Consommables & équipements</h2><div class="seg" style="margin-bottom:10px">${[['tous','Tout'],['petits','Consommables'],['gros','Gros équipements'],['fourn','Fournisseurs monde']].map(([v,l])=>`<button data-act="ctype" data-v="${v}" class="${ctab===v?'on':''}">${l}</button>`).join('')}</div>${ctab==='fourn'?vSuppliersWorld():`<div class="banner info small">Tailles, poids et prix sont des <b>ordres de grandeur</b> à confirmer par devis. Saisissez vos vrais prix : ils remplacent les estimations dans le comparatif.</div>
+ ${LIST.map(c=>{const p=S.consoPrices[c.id]||{};const fr=num(p.eu)||mid(c.fr),cn=num(p.cn)||mid(c.cn);const gap=fr&&cn?(fr-cn)/fr*100:null;
  return `<div class="card" id="part-${c.id}"><div class="part"><label class="ph" title="Changer la photo">${partImg(c)}<input type="file" accept="image/*" data-file="cphoto" data-id="${c.id}" hidden></label><div><b style="font-size:15px">${esc(c.nom)}</b><div class="small muted">${esc(c.metier)}</div><dl class="spec"><dt>Dimensions</dt><dd>${esc(c.dim)}</dd><dt>Poids</dt><dd>${esc(c.poids)}</dd><dt>Matière</dt><dd>${esc(c.mat)}</dd><dt>Usure</dt><dd>${esc(c.usure)}</dd></dl></div></div>
- <div class="cmp"><div><div class="l">France</div><div class="v">${p.eu?eur(num(p.eu)):c.fr[0]+'–'+c.fr[1]+' €'}</div><div class="tiny">/ ${esc(c.unit)}${p.eu?' · votre prix':' · estimé'}</div></div><div><div class="l">Chine</div><div class="v">${p.cn?eur(num(p.cn)):c.cn?c.cn[0]+'–'+c.cn[1]+' €':'—'}</div><div class="tiny">${c.cn?'départ usine'+(p.cn?' · votre prix':' · estimé'):'non pertinent'}</div></div><div><div class="l">Écart</div><div class="v ${gap>0?'up':'down'}">${gap===null?'—':(gap>0?'−':'+')+fmt(Math.abs(gap),0)+' %'}</div><div class="tiny">avant transport et douane</div></div></div>
- ${c.warn?`<p class="small" style="color:var(--warn);margin:8px 0 0">${esc(c.warn)}</p>`:''}
+ <div class="cmp"><div><div class="l">France</div><div class="v">${p.eu?eur(num(p.eu)):fmt(c.fr[0],c.fr[0]<10?1:0)+'–'+fmt(c.fr[1],c.fr[1]<10?1:0)+' €'}</div><div class="tiny">/ ${esc(c.unit)}${p.eu?' · votre prix':' · estimé'}</div></div><div><div class="l">Chine</div><div class="v">${p.cn?eur(num(p.cn)):c.cn?fmt(c.cn[0],c.cn[0]<10?1:0)+'–'+fmt(c.cn[1],c.cn[1]<10?1:0)+' €':'—'}</div><div class="tiny">${c.cn?'départ usine'+(p.cn?' · votre prix':' · estimé'):'non pertinent'}</div></div><div><div class="l">Écart</div><div class="v ${gap>0?'up':'down'}">${gap===null?'—':(gap>0?'−':'+')+fmt(Math.abs(gap),0)+' %'}</div><div class="tiny">avant transport et douane</div></div></div>
+ ${c.big?'<span class="tag acc" style="margin-top:8px">Gros équipement</span>':''}${c.warn?`<p class="small" style="color:var(--warn);margin:8px 0 0">${esc(c.warn)}</p>`:''}
  <div class="grid3" style="margin-top:10px"><div class="f"><label>Votre prix France €</label><input inputmode="decimal" value="${esc(p.eu||'')}" data-conso="${c.id}" data-k="eu"></div><div class="f"><label>Votre prix Chine €</label><input inputmode="decimal" value="${esc(p.cn||'')}" data-conso="${c.id}" data-k="cn"></div><div class="f"><label>Fournisseur retenu</label><input value="${esc(p.sup||'')}" data-conso="${c.id}" data-k="sup"></div></div>
- <div class="row small" style="margin-bottom:8px"><a href="https://www.alibaba.com/trade/search?SearchText=${q(c.en)}" target="_blank" rel="noopener">Alibaba</a><a href="https://s.1688.com/selloffer/offer_search.htm?keywords=${q(c.en)}" target="_blank" rel="noopener">1688</a><a href="${gsearch('site:made-in-china.com '+c.en)}" target="_blank" rel="noopener">Made-in-China</a><a href="${gsearch(c.nom+' fournisseur pêche professionnelle')}" target="_blank" rel="noopener">Europe</a></div>
- <div class="row"><button class="btn sm" data-act="conso2world" data-id="${c.id}">Comparer dans le monde</button><button class="btn sec sm" data-act="conso2china" data-id="${c.id}">Calcul import Chine</button><label class="btn sec sm" style="margin:0">Photo<input type="file" accept="image/*" data-file="cphoto" data-id="${c.id}" hidden></label></div></div>`}).join('')}
- <div class="card"><h3>Fabricants européens de référence</h3>${EU_SUPPLIERS.map(([n,d])=>`<div class="kv"><span><b>${esc(n)}</b><br><span class="small muted">${esc(d)}</span></span><a class="btn sec sm" href="${gsearch(n+' '+d.split(' – ')[0])}" target="_blank" rel="noopener">Site</a></div>`).join('')}</div>`;
+ <div class="row small" style="margin-bottom:8px"><a href="https://www.alibaba.com/trade/search?SearchText=${q(c.en)}" target="_blank" rel="noopener">Alibaba</a><a href="https://s.1688.com/selloffer/offer_search.htm?keywords=${q(c.en)}" target="_blank" rel="noopener">1688</a><a href="${gsearch('site:made-in-china.com '+c.en)}" target="_blank" rel="noopener">Made-in-China</a><a href="${gsearch(c.nom+' fournisseur pêche professionnelle')}" target="_blank" rel="noopener">Europe</a><a href="https://www.indiamart.com/search.mp?ss=${q(c.en)}" target="_blank" rel="noopener">Inde</a><a href="${gsearch(c.en+' manufacturer Turkey')}" target="_blank" rel="noopener">Turquie</a></div>
+ <div class="row"><button class="btn sm" data-act="consosup" data-id="${c.id}">Fournisseurs</button><button class="btn sec sm" data-act="conso2world" data-id="${c.id}">Comparer les offres</button><button class="btn sec sm" data-act="conso2china" data-id="${c.id}">Calcul import Chine</button><label class="btn sec sm" style="margin:0">Photo<input type="file" accept="image/*" data-file="cphoto" data-id="${c.id}" hidden></label></div></div>`}).join('')}
+ ${vSuppliersWorld()}`}`;
 }
 function worldCalc(src){
  const qty=Math.max(1,num(src.qty));const st=S.settings;
@@ -1180,8 +1178,8 @@ function mapSVG(){
  let grid='';for(let lo=-6;lo<=10;lo+=2){const [x]=mp(46,lo);grid+=`<line x1="${x}" y1="0" x2="${x}" y2="700" class="grid"/>`}for(let la=42;la<=51;la+=1){const [,y]=mp(la,0);grid+=`<line x1="0" y1="${y}" x2="800" y2="${y}" class="grid"/>`}
  const zones=FZONES.map(z=>{const [x,y]=mp(z.lat,z.lon);const on=!f||z.sp.includes(f);const sel=sub.mapZone===z.id;return `<g data-act="mapzone" data-id="${z.id}" style="cursor:pointer" opacity="${on?1:.15}"><ellipse cx="${x}" cy="${y}" rx="${z.rx*MAP.c*MAP.k}" ry="${z.ry*MAP.k}" class="zone ${sel?'sel':''}"/><text x="${x}" y="${y+3}" class="zl" font-size="${Math.max(6,10*s)}">${esc(z.n.split(' – ')[0].split(' (')[0])}</text></g>`}).join('');
  const dots=Object.entries(CRIEE_GEO).map(([id,[la,lo]])=>{const [x,y]=mp(la,lo);return `<g data-act="mapcriee" data-id="${id}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="${Math.max(1.6,3.2*s)}" class="cd"/>${s<.6?`<text x="${x+4*s+2}" y="${y-3*s}" class="cl" font-size="${Math.max(5,8*s)}">${esc(criee(id).nom.split(' – ')[0])}</text>`:''}</g>`}).join('');
- const [hx,hy]=mp(49.49,0.11);
- return `<svg viewBox="${vb.join(' ')}" class="map" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sea" cx=".4" cy=".4" r=".8"><stop offset="0" stop-color="#081626"/><stop offset="1" stop-color="#03070D"/></radialGradient></defs><rect x="-50" y="-50" width="900" height="800" fill="url(#sea)"/>${grid}${land}${zones}${dots}<g><circle cx="${hx}" cy="${hy}" r="${4*s}" fill="none" stroke="#14B88A" stroke-width="${1.2*s}"/><text x="${hx+6*s}" y="${hy+10*s}" class="hv" font-size="${Math.max(6,10*s)}">Le Havre</text></g></svg>`;
+ const ports=PORTS.map(pt=>{const [x,y]=mp(pt.lat,pt.lon);return `<g data-act="mapport" data-id="${pt.id}" style="cursor:pointer"><rect x="${x-2.4*s}" y="${y-2.4*s}" width="${4.8*s}" height="${4.8*s}" class="pd"/>${s<.6?`<text x="${x+4*s+2}" y="${y+6*s}" class="pl" font-size="${Math.max(5,7.5*s)}">${esc(pt.nom)}</text>`:''}</g>`}).join('');const [hx,hy]=mp(49.49,0.11);
+ return `<svg viewBox="${vb.join(' ')}" class="map" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sea" cx=".4" cy=".4" r=".8"><stop offset="0" stop-color="#081626"/><stop offset="1" stop-color="#03070D"/></radialGradient></defs><rect x="-50" y="-50" width="900" height="800" fill="url(#sea)"/>${grid}${land}${zones}${dots}${ports}<g><circle cx="${hx}" cy="${hy}" r="${4*s}" fill="none" stroke="#14B88A" stroke-width="${1.2*s}"/><text x="${hx+6*s}" y="${hy+10*s}" class="hv" font-size="${Math.max(6,10*s)}">Le Havre</text></g></svg>`;
 }
 function vMap(){
  const z=FZONES.find(x=>x.id===sub.mapZone);const f=sub.mapSp||'';
@@ -1189,7 +1187,7 @@ function vMap(){
  <div class="seg" style="margin-bottom:10px">${[['france','France'],['manche','Manche'],['bretagne','Bretagne'],['atlantique','Atlantique'],['med','Méditerranée']].map(([v,l])=>`<button data-act="mapview" data-v="${v}" class="${(sub.mapView||'france')===v?'on':''}">${l}</button>`).join('')}</div>
  <div class="f"><select data-change="mapsp">${opt('','Toutes les espèces',f)}${SPECIES.map(s=>opt(s.n,s.n,f)).join('')}</select></div>
  <div class="mapbox">${mapSVG()}</div>
- <div class="row small muted" style="margin:6px 0 12px"><span><span class="dot live"></span> zone de pêche</span><span><span class="dot" style="background:var(--gold)"></span> criée</span><span class="grow"></span><span>Touchez une zone ou une criée</span></div>
+ <div class="row small muted" style="margin:6px 0 12px"><span><span class="dot live"></span> zone de pêche</span><span><span class="dot" style="background:var(--gold)"></span> criée</span><span><span class="dot" style="background:var(--em);border-radius:2px"></span> petit port</span><span class="grow"></span><span>Touchez une zone ou une criée</span></div>
  ${z?`<div class="card" id="zoneinfo"><div class="row"><h3 class="grow" style="margin:0">${esc(z.n)}</h3><button class="x" data-act="mapzone" data-id="">×</button></div><p class="small" style="margin:8px 0">${esc(z.d)}</p>
  <div class="small muted" style="margin-bottom:4px">Espèces (touchez pour la fiche)</div><div class="row">${z.sp.map(n=>`<button class="tag acc" data-act="species" data-v="${esc(n)}">${esc(n)}</button>`).join('')}</div>
  ${z.cr.length?`<div class="small muted" style="margin:10px 0 4px">Criées de la zone</div><div class="row">${z.cr.map(id=>`<button class="btn sec sm" data-act="gocriee" data-id="${id}">${esc(criee(id).nom)}</button>`).join('')}</div>`:''}</div>`
@@ -1221,7 +1219,7 @@ function speciesSheet(name){
 function speciesFromLabel(t){t=(t||'').toLowerCase();return (SPECIES.find(s=>t.includes(s.n.split(/[ (/]/)[0].toLowerCase()))||{}).n}
 
 /* ============ V4 : version, espèces supplémentaires, photos ============ */
-const APP_VERSION='4.0';const APP_DATE='14/11/2026';
+const APP_VERSION='4.2';const APP_DATE='14/11/2026';
 SPECIES.push(
  {n:'Crevette grise',f:'Manche Est, Mer du Nord, baies (Seine, Somme, Veys)',m:[4,5,9,10,11],pm:0,reg:'Pêche au petit chalut à perche ; prix non publié au niveau national : saisissez le cours constaté.'},
  {n:'Crevette rose (bouquet)',f:'Bretagne, Normandie, Pays de la Loire',m:[9,10,11,12],pm:19.74,pmNote:'Grandcamp ; Concarneau : 29,04 €/kg',reg:'Casiers et petits chaluts ; pas de quota.'},
@@ -1516,6 +1514,209 @@ async function notifyHits(){if(!('Notification' in window)||Notification.permiss
  for(const w of S.watch){for(const h of evalWatch(w)){const key=w.id+'|'+h.id+'|'+h.txt+'|'+todayISO();if(sent[key])continue;sent[key]=1;const title=`${S.settings.appName} : ${w.espece}`;const body=`${criee(h.id)?.nom||''} – ${h.txt}`;try{const r=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(r)r.showNotification(title,{body,icon:'icon-192.png',tag:key});else new Notification(title,{body})}catch(e){}}}
  try{localStorage.setItem('mp_sent',JSON.stringify(sent))}catch(e){}}
 
+/* ============ V4.1 : photos (lot), gros consommables, fournisseurs monde ============ */
+Object.assign(ILLUS,{
+ winch:`<svg viewBox="0 0 64 64"><g ${G}><rect x="10" y="20" width="36" height="24" rx="12"/><path d="M14 20v24M42 20v24M46 32h10M8 50h48"/><circle cx="54" cy="32" r="3"/></g></svg>`,
+ prop:`<svg viewBox="0 0 64 64"><g ${G}><circle cx="32" cy="32" r="5"/><path d="M32 27c-4-10 0-20 6-20s4 12-6 20M37 33c10-2 18 4 16 10s-12 0-16-10M29 35c-6 8-16 10-18 4s8-10 18-4"/></g></svg>`,
+ engine:`<svg viewBox="0 0 64 64"><g ${G}><rect x="10" y="22" width="40" height="24" rx="2"/><path d="M16 22v-8h8v8M30 22v-8h8v8M50 30h6v8h-6M6 30h4v10H6M18 46v6M42 46v6"/></g></svg>`,
+ hydraulic:`<svg viewBox="0 0 64 64"><g ${G}><rect x="8" y="24" width="30" height="16" rx="3"/><path d="M38 28h18M38 36h18M14 24v-8h18v8M14 40v8h18v-8"/></g></svg>`,
+ sonar:`<svg viewBox="0 0 64 64"><g ${G}><rect x="8" y="10" width="48" height="36" rx="3"/><path d="M14 40c6-8 10-20 14-20s8 14 12 14 6-6 10-6"/><path d="M26 52h12M32 46v6"/></g></svg>`,
+ radar:`<svg viewBox="0 0 64 64"><g ${G}><circle cx="32" cy="34" r="20"/><circle cx="32" cy="34" r="12"/><path d="M32 34l14-10"/><circle cx="40" cy="28" r="1.6" fill="#D4AF5A"/></g></svg>`,
+ vhf:`<svg viewBox="0 0 64 64"><g ${G}><rect x="20" y="16" width="24" height="40" rx="4"/><path d="M28 16V4M24 26h16M24 34h16"/><circle cx="32" cy="46" r="4"/></g></svg>`,
+ raft:`<svg viewBox="0 0 64 64"><g ${G}><ellipse cx="32" cy="42" rx="26" ry="10"/><path d="M12 40c0-14 9-24 20-24s20 10 20 24"/><path d="M32 16V8"/></g></svg>`,
+ ice:`<svg viewBox="0 0 64 64"><g ${G}><rect x="10" y="12" width="44" height="40" rx="3"/><path d="M10 26h44M18 18h6M22 34l6 6 6-6M28 40V30"/></g></svg>`
+});
+CONSO2.push(
+ {id:'c18',nom:'Panneaux de chalut (la paire)',metier:'Chalut',usure:'Remplacement tous les 2 à 6 ans, casse possible',en:'trawl doors pair',il:'door',dim:'≈ 1,5 à 3 m² par panneau',poids:'≈ 200 à 800 kg / panneau',mat:'Acier (polyvalents, hydrodynamiques)',unit:'paire',fr:[6000,25000],cn:[2500,10000],big:1},
+ {id:'c19',nom:'Chalut complet',metier:'Chalut de fond ou pélagique',usure:'1 à 3 saisons selon fonds',en:'bottom trawl net complete',il:'net',dim:'Selon bateau (corde de dos 20 à 60 m)',poids:'≈ 150 kg à 1 t',mat:'PE / PA, panneaux de Dyneema',unit:'chalut',fr:[5000,30000],cn:[2000,12000],big:1},
+ {id:'c20',nom:'Drague à Saint-Jacques complète',metier:'Drague',usure:'Plusieurs saisons, réparations fréquentes',en:'scallop dredge complete',il:'tooth',dim:'Largeur réglementaire selon zone (≈ 2 m)',poids:'≈ 300 à 600 kg',mat:'Acier, cotte de mailles, barre à dents',unit:'drague',fr:[3000,8000],cn:[1200,3500],big:1},
+ {id:'c21',nom:'Funes en touret complet',metier:'Chalut',usure:'1 à 3 ans',en:'trawl warp wire rope reel',il:'wire',dim:'2 × 600 à 1 200 m, Ø 16 à 22 mm',poids:'≈ 2 à 4 t',mat:'Acier galvanisé compacté',unit:'jeu',fr:[8000,25000],cn:[3500,11000],big:1},
+ {id:'c22',nom:'Treuil de pêche hydraulique',metier:'Chalut, drague',usure:'10 à 20 ans, révisions',en:'hydraulic trawl winch',il:'winch',dim:'2 à 4 tambours',poids:'≈ 1 à 6 t',mat:'Acier, hydraulique',unit:'treuil',fr:[25000,150000],cn:[10000,60000],big:1},
+ {id:'c23',nom:'Hélice',metier:'Propulsion',usure:'Chocs, cavitation : remplacement ou reprise',en:'marine propeller bronze',il:'prop',dim:'Ø 0,8 à 2,5 m, 3 à 5 pales',poids:'≈ 50 à 800 kg',mat:'Bronze (cupro-alu) ou inox',unit:'hélice',fr:[3000,30000],cn:[1200,12000],big:1},
+ {id:'c24',nom:'Moteur de propulsion',metier:'Propulsion',usure:'Remotorisation tous les 15 à 25 ans',en:'marine diesel engine',il:'engine',dim:'≈ 200 à 1 000 ch',poids:'≈ 1 à 5 t',mat:'Diesel marin',unit:'moteur',fr:[40000,250000],cn:[20000,120000],big:1,warn:'Vérifiez la conformité aux normes d’émission et la disponibilité du SAV en France.'},
+ {id:'c25',nom:'Pièces moteur (turbo, injecteurs, culasse)',metier:'Propulsion',usure:'Selon heures moteur',en:'marine diesel turbocharger injector',il:'engine',dim:'Référence constructeur',poids:'Variable',mat:'Pièces d’origine ou adaptables',unit:'pièce',fr:[500,8000],cn:[150,3000],big:1,warn:'Risque de contrefaçon : exigez la référence et le certificat d’origine.'},
+ {id:'c26',nom:'Hydraulique (pompes, moteurs, distributeurs)',metier:'Treuils, vire-casiers',usure:'Selon usage',en:'hydraulic pump motor marine',il:'hydraulic',dim:'Selon débit et pression',poids:'≈ 5 à 150 kg',mat:'Fonte, acier',unit:'pièce',fr:[800,12000],cn:[300,5000],big:1},
+ {id:'c27',nom:'Sondeur / sonar de pêche',metier:'Électronique',usure:'8 à 15 ans',en:'fishing sonar echo sounder',il:'sonar',dim:'Écran 10 à 19 pouces + transducteur',poids:'—',mat:'Électronique marine',unit:'appareil',fr:[2000,60000],cn:[800,20000],big:1},
+ {id:'c28',nom:'GPS, traceur, radar',metier:'Électronique',usure:'8 à 15 ans',en:'marine radar chart plotter',il:'radar',dim:'Écrans, antenne radar',poids:'—',mat:'Électronique marine',unit:'appareil',fr:[1500,20000],cn:[600,8000],big:1},
+ {id:'c29',nom:'VHF / AIS',metier:'Sécurité',usure:'10 ans',en:'marine VHF AIS transponder',il:'vhf',dim:'—',poids:'—',mat:'Électronique marine',unit:'appareil',fr:[400,2500],cn:[150,1000],big:1,warn:'Matériel radio : doit être homologué pour l’Europe (marquage CE / « roue de gouvernail »).'},
+ {id:'c30',nom:'Radeau de survie (6 à 12 places)',metier:'Sécurité',usure:'Révision périodique obligatoire',en:'liferaft',il:'raft',dim:'Conteneur ou valise',poids:'≈ 40 à 120 kg',mat:'Caoutchouc, gaz',unit:'radeau',fr:[2500,7000],cn:[1200,3500],big:1,warn:'Obligatoirement homologué (réglementation française / SOLAS) : un radeau non homologué est interdit à bord.'},
+ {id:'c31',nom:'Vire-casier / enrouleur de filet',metier:'Casier, filet',usure:'10 à 15 ans',en:'pot hauler net drum',il:'winch',dim:'Selon bateau',poids:'≈ 100 kg à 2 t',mat:'Acier inox, hydraulique',unit:'appareil',fr:[5000,25000],cn:[2000,10000],big:1},
+ {id:'c32',nom:'Machine à glace / froid de cale',metier:'Bord',usure:'10 à 15 ans',en:'flake ice machine marine',il:'ice',dim:'≈ 0,5 à 5 t de glace / jour',poids:'≈ 100 à 800 kg',mat:'Inox, groupe frigorifique',unit:'appareil',fr:[8000,40000],cn:[3000,15000],big:1}
+);
+const CONSO_CAT={c0:'drague',c1:'drague',c2:'drague',c20:'drague',c3:'cable',c21:'cable',c4:'panneau',c18:'panneau',c5:'filet',c6:'filet',c7:'filet',c8:'filet',c12:'filet',c19:'filet',c9:'divers',c10:'divers',c11:'divers',c16:'divers',c17:'divers',c13:'moteur',c14:'moteur',c24:'moteur',c25:'moteur',c23:'moteur',c15:'divers',c22:'treuil',c26:'treuil',c31:'treuil',c27:'elec',c28:'elec',c29:'elec',c30:'secu',c32:'divers'};
+const SUP_CATS={filet:'Filets & chaluts',cable:'Câbles & cordages',panneau:'Panneaux & dragues',drague:'Panneaux & dragues',treuil:'Treuils & hydraulique',moteur:'Moteurs & propulsion',elec:'Électronique',secu:'Sécurité',divers:'Accastillage & divers'};
+// Fabricants reconnus. site : uniquement quand l'adresse est connue avec certitude, sinon recherche.
+const WSUP=[
+ {n:'Garware Technical Fibres',c:'Inde',k:['filet','cable'],d:'1er exportateur indien de filets et chaluts (Pune), marques SNG, Sapphire, Olivene',site:'https://www.garwarefibres.com'},
+ {n:'Hunan Xinhai Co.',c:'Chine',k:['filet','cable'],d:'Grand fabricant chinois de filets, chaluts et sennes complets, cordages (depuis 1977)',site:'https://xinhaicorp.en.alibaba.com'},
+ {n:'Tianjin Fishing Net Factory',c:'Chine',k:['filet','cable'],d:'Filets, fils et cordages, 90 % à l’export (depuis 1960)',site:'https://tjfishnet.en.alibaba.com'},
+ {n:'Qingdao Qihang',c:'Chine',k:['filet'],d:'Filets de pêche et d’aquaculture'},
+ {n:'Anhui Jinhou',c:'Chine',k:['filet','cable'],d:'Filets et cordages'},
+ {n:'Weichai',c:'Chine',k:['moteur'],d:'Moteurs diesel marins (groupe propriétaire de Baudouin)'},
+ {n:'Tunanets',c:'Turquie',k:['filet'],d:'Usine de filets la plus moderne de Turquie, membre d’Eurocord'},
+ {n:'Mayasera A.S.',c:'Turquie',k:['filet'],d:'Fabricant de filets de pêche (depuis 1983)'},
+ {n:'Marmara Plastik',c:'Turquie',k:['cable'],d:'Cordages marins et aquaculture (Istanbul)'},
+ {n:'Siam Brothers Vietnam',c:'Vietnam',k:['filet','cable'],d:'Fils, filets et cordages'},
+ {n:'Saigon Fishing Net JSC',c:'Vietnam',k:['filet'],d:'Fils et filets de pêche'},
+ {n:'King Chou Marine Tech',c:'Taïwan',k:['filet','cable'],d:'Filets, fils et cordages, parmi les grands mondiaux'},
+ {n:'Forever Industries (Forever Net)',c:'Taïwan / Vietnam',k:['filet','cable'],d:'Chaluts PE et cordages, usine au Vietnam'},
+ {n:'Korea Trading & Industries',c:'Corée du Sud',k:['filet','cable','divers'],d:'Filets, sennes complètes, câbles de chalut, accastillage, flotteurs'},
+ {n:'KKF – Khon Kaen Fishing Net Factory',c:'Thaïlande',k:['filet'],d:'Très grand fabricant mondial de filets',site:'https://ecatalog.kkfnets.com'},
+ {n:'Nitto Seimo',c:'Japon',k:['filet'],d:'Premier fabricant mondial de filets en part de marché'},
+ {n:'Furuno',c:'Japon',k:['elec'],d:'Sondeurs, sonars, radars, traceurs',site:'https://www.furuno.com'},
+ {n:'Euronete (WireCo)',c:'Portugal',k:['filet','cable'],d:'Filets et cordages techniques'},
+ {n:'Vónin',c:'Îles Féroé',k:['filet','panneau'],d:'Chaluts et panneaux'},
+ {n:'Hampiðjan',c:'Islande',k:['filet','cable'],d:'Chaluts, câbles Dynex'},
+ {n:'Thyborøn Trawldoor',c:'Danemark',k:['panneau'],d:'Panneaux de chalut'},
+ {n:'Morgère',c:'France',k:['panneau'],d:'Panneaux de chalut (Saint-Malo)'},
+ {n:'Le Drezen',c:'France',k:['filet'],d:'Filets et chaluts (Le Guilvinec)'},
+ {n:'Ibercisa',c:'Espagne',k:['treuil'],d:'Treuils de pêche hydrauliques et électriques'},
+ {n:'Rapp Marine',c:'Norvège',k:['treuil'],d:'Treuils et systèmes de pont'},
+ {n:'Kongsberg Simrad',c:'Norvège',k:['elec'],d:'Sondeurs et sonars de pêche',site:'https://www.kongsberg.com'},
+ {n:'Bekaert',c:'Belgique',k:['cable'],d:'Câbles acier'},
+ {n:'Teufelberger',c:'Autriche',k:['cable'],d:'Câbles acier et cordages'},
+ {n:'Baudouin',c:'France',k:['moteur'],d:'Moteurs marins (Marseille)'},
+ {n:'Volvo Penta',c:'Suède',k:['moteur'],d:'Moteurs marins'},
+ {n:'Yanmar',c:'Japon',k:['moteur'],d:'Moteurs marins'},
+ {n:'Viking Life-Saving Equipment',c:'Danemark',k:['secu'],d:'Radeaux de survie homologués',site:'https://www.viking-life.com'},
+ {n:'Survitec',c:'Royaume-Uni',k:['secu'],d:'Radeaux et équipements de survie'},
+ {n:'Plastimo',c:'France',k:['secu','divers'],d:'Sécurité et accastillage',site:'https://www.plastimo.com'},
+ {n:'Danfoss / Bosch Rexroth',c:'Danemark / Allemagne',k:['treuil'],d:'Composants hydrauliques'}
+];
+const WCOUNTRIES=[...new Set(WSUP.map(s=>s.c))];
+// Titres Wikipédia (anglais) pour les photos des consommables
+const CONSO_WIKI={tooth:'Fishing_dredge',ring:'Fishing_dredge',bar:'Fishing_dredge',wire:'Wire_rope',door:'Trawling',bobbin:'Bottom_trawling',net:'Fishing_net',float:'Fishing_net',shackle:'Shackle',chain:'Chain',pot:'Lobster_trap',filter:'Oil_filter',oil:'Motor_oil',anode:'Galvanic_anode',crate:'Fishing_vessel',glove:'Glove',winch:'Winch',prop:'Propeller',engine:'Diesel_engine',hydraulic:'Hydraulic_pump',sonar:'Fishfinder',radar:'Marine_radar',vhf:'Marine_VHF_radio',raft:'Liferaft',ice:'Icemaker'};
+/* ---- photos : récupération groupée ---- */
+function photoTitle(key){if(key.startsWith('c:')){const c=CONSO2.find(x=>x.id===key.slice(2));return c&&CONSO_WIKI[c.il]}return (SP_META[key]||[])[1]}
+function photoHTML(key,sil){const c=PHOTO_CACHE[key];if(c&&c.src)return `<img src="${esc(c.src)}" alt="" data-fbkey="${esc(key)}" loading="lazy" referrerpolicy="no-referrer">`;return `<span class="sil" data-ph="${esc(key)}">${sil||''}</span>`}
+spPhotoHTML=function(n){return photoHTML(n,SIL[spCat(n)])};
+let PHOTO_TRIED=false;
+async function fetchAllPhotos(){
+ const keys=[...SPECIES.map(s=>s.n),...CONSO2.map(c=>'c:'+c.id)].filter(k=>!PHOTO_CACHE[k]&&photoTitle(k));
+ if(!keys.length)return;const titles=[...new Set(keys.map(photoTitle))];const res={};
+ for(let i=0;i<titles.length;i+=40){const part=titles.slice(i,i+40);
+  const r=await fetch('https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&prop=pageimages&piprop=thumbnail|name&pithumbsize=600&titles='+encodeURIComponent(part.join('|')));
+  if(!r.ok)continue;const j=await r.json();const map={};part.forEach(t=>map[t.replace(/_/g,' ')]=t);
+  const fw=(from,to)=>{for(const k in map)if(k===from)map[to]=map[k]};(j.query.normalized||[]).forEach(n=>fw(n.from,n.to));(j.query.redirects||[]).forEach(n=>fw(n.from,n.to));
+  Object.values(j.query.pages||{}).forEach(pg=>{const orig=map[pg.title];if(orig&&pg.thumbnail)res[orig]={src:pg.thumbnail.source,file:pg.pageimage||'',page:'https://en.wikipedia.org/wiki/'+encodeURIComponent(pg.title.replace(/ /g,'_'))}})}
+ const files=[...new Set(Object.values(res).map(x=>x.file).filter(Boolean))];const meta={};
+ for(let i=0;i<files.length;i+=40){try{const part=files.slice(i,i+40);const r=await fetch('https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&prop=imageinfo&iiprop=extmetadata&iiextmetadatafilter=Artist|LicenseShortName&titles='+encodeURIComponent(part.map(f=>'File:'+f).join('|')));const j=await r.json();Object.values(j.query.pages||{}).forEach(pg=>{const md=pg.imageinfo&&pg.imageinfo[0].extmetadata||{};const d=document.createElement('div');d.innerHTML=(md.Artist&&md.Artist.value)||'';meta[(pg.title||'').replace(/^File:/,'').replace(/ /g,'_')]={artist:d.textContent.trim(),lic:(md.LicenseShortName&&md.LicenseShortName.value)||''}})}catch(e){}}
+ keys.forEach(k=>{const r=res[photoTitle(k)];if(r){const m=meta[(r.file||'').replace(/ /g,'_')]||{};PHOTO_CACHE[k]={...r,artist:m.artist||'',lic:m.lic||'Voir la source'}}else PHOTO_CACHE[k]={src:'',none:1}});
+ savePhotoCache();
+}
+hydratePhotos=async function(){
+ if(PHOTO_BLOCKED||photoBusy)return;if(!document.querySelector('[data-ph]'))return;photoBusy=true;
+ try{if(!PHOTO_TRIED){PHOTO_TRIED=true;await fetchAllPhotos()}
+  document.querySelectorAll('[data-ph]').forEach(el=>{const c=PHOTO_CACHE[el.dataset.ph];if(c&&c.src){const im=document.createElement('img');im.src=c.src;im.alt='';im.loading='lazy';im.referrerPolicy='no-referrer';im.dataset.fbkey=el.dataset.ph;el.replaceWith(im)}});
+ }catch(e){PHOTO_BLOCKED=true}finally{photoBusy=false}
+};
+function vSuppliersWorld(){
+ const c=sub.wsc||'';const k=sub.wsk||'';const list=WSUP.filter(s=>(!c||s.c===c)&&(!k||s.k.some(x=>SUP_CATS[x]===k)));
+ return `<div class="card" id="wsup"><h3>Fournisseurs dans le monde</h3>
+ <div class="pill-filter"><button data-act="wsc" data-v="" class="${!c?'on':''}">Tous pays</button>${WCOUNTRIES.map(x=>`<button data-act="wsc" data-v="${esc(x)}" class="${c===x?'on':''}">${esc(x)}</button>`).join('')}</div>
+ <div class="pill-filter"><button data-act="wsk" data-v="" class="${!k?'on':''}">Tout</button>${[...new Set(Object.values(SUP_CATS))].map(x=>`<button data-act="wsk" data-v="${esc(x)}" class="${k===x?'on':''}">${esc(x)}</button>`).join('')}</div>
+ <div class="list">${list.map(s=>`<div class="it" style="flex-wrap:wrap"><div class="grow"><div class="t">${esc(s.n)} <span class="tag">${esc(s.c)}</span></div><div class="small muted">${esc(s.d)}</div><div class="small muted">${s.k.map(x=>SUP_CATS[x]).filter((v,i,a)=>a.indexOf(v)===i).join(' · ')}</div></div><div class="row">${s.site?`<a class="btn sm" href="${s.site}" target="_blank" rel="noopener">Site</a>`:''}<a class="btn sec sm" href="${gsearch(s.n+' '+s.c.split(' /')[0]+' contact email')}" target="_blank" rel="noopener">Contact</a></div></div>`).join('')||'<div class="empty">Aucun fournisseur pour ce filtre.</div>'}</div>
+ <p class="tiny" style="margin:8px 0 0">« Site » ouvre le site officiel (ou la vitrine Alibaba de l'usine) ; « Contact » recherche l'e-mail et le téléphone professionnels publiés par l'entreprise. Demandez toujours un échantillon et un certificat matière avant commande.</p></div>`;
+}
+
+/* ============ V4.2 : demandes d'accès, petits ports, contact, grandes tables ============ */
+// Gestionnaires et contacts publics vérifiés (sources publiques). Le reste : à compléter dans l'appli.
+const CRIEE_INFO={
+ boulogne:{g:'Port Boulogne Calais – Service Criée',resp:'Gildas Dubois, chef du service de la Marée',tel:'03 21 99 66 45',email:'gildas.dubois@portboulognecalais.fr',ok:1},
+ lorient:{g:'SEM Lorient-Keroman',tel:'02 97 37 21 11',email:'criee.lorient@keroman.fr',ok:1},
+ dieppe:{g:'Régie Dieppoise des Activités portuaires',ok:1},
+ fecamp:{g:'SARL La Criée de Fécamp Côte d’Albâtre',resp:'Stéphane Savoye, directeur (selon Normandie Fraîcheur Mer)',ok:1},
+ portenbessin:{g:'Halle à marée de Port-en-Bessin (criée du Calvados)',tel:'02 31 51 68 00'},
+ grandcamp:{g:'CCI Caen Normandie (gestion confiée par le Département du Calvados)',ok:1},
+ granville:{g:'SPL des ports de la Manche – service de la Criée',ok:1},
+ cherbourg:{g:'Gestionnaire à confirmer (ports de la Manche)'},
+ douarnenez:{g:'CCI métropolitaine Bretagne Ouest – criées de Cornouaille',ok:1},audierne:{g:'CCI métropolitaine Bretagne Ouest – criées de Cornouaille',ok:1},saintguenole:{g:'CCI métropolitaine Bretagne Ouest – criées de Cornouaille',ok:1},guilvinec:{g:'CCI métropolitaine Bretagne Ouest – criées de Cornouaille',ok:1},loctudy:{g:'CCI métropolitaine Bretagne Ouest – criées de Cornouaille',ok:1},concarneau:{g:'CCI métropolitaine Bretagne Ouest – criées de Cornouaille',ok:1}
+};
+const PORTS=[
+ {id:'p_lehavre',nom:'Le Havre',dep:'76',lat:49.487,lon:0.107,t:'Marché aux poissons, quai de l’Île : une vingtaine de bateaux en vente directe',g:'Département de Seine-Maritime (port de pêche)'},
+ {id:'p_letreport',nom:'Le Tréport',dep:'76',lat:50.062,lon:1.373,t:'Marché aux poissons, quai François-Ier ; criée rattachée à Fécamp',g:'Département de Seine-Maritime'},
+ {id:'p_etretat',nom:'Étretat',dep:'76',lat:49.708,lon:0.204,t:'Petite pêche côtière, vente directe'},
+ {id:'p_honfleur',nom:'Honfleur',dep:'14',lat:49.42,lon:0.236,t:'Port départemental, pêche côtière (maquereau, coquilles)',g:'Département du Calvados'},
+ {id:'p_trouville',nom:'Trouville-sur-Mer',dep:'14',lat:49.366,lon:0.082,t:'Marché aux poissons, boulevard Fernand-Moureaux'},
+ {id:'p_dives',nom:'Dives-sur-Mer',dep:'14',lat:49.29,lon:-0.1,t:'Marché aux poissons'},
+ {id:'p_ouistreham',nom:'Ouistreham',dep:'14',lat:49.283,lon:-0.25,t:'Petite pêche côtière'},
+ {id:'p_courseulles',nom:'Courseulles-sur-Mer',dep:'14',lat:49.333,lon:-0.458,t:'Petite pêche, vente directe'},
+ {id:'p_saintvaast',nom:'Saint-Vaast-la-Hougue',dep:'50',lat:49.588,lon:-1.267,t:'Petite pêche et conchyliculture'},
+ {id:'p_barfleur',nom:'Barfleur',dep:'50',lat:49.671,lon:-1.262,t:'Petite pêche (homard, crabes, coquillages)'},
+ {id:'p_carteret',nom:'Barneville-Carteret',dep:'50',lat:49.376,lon:-1.792,t:'Petite pêche côtière'},
+ {id:'p_marseille',nom:'Marseille – Vieux-Port',dep:'13',lat:43.295,lon:5.374,t:'Marché aux poissons quai de la Fraternité, vente directe des pêcheurs'}
+];
+const AUCXIS={n:'Aucxis',d:'Éditeur belge du logiciel de vente qui équipe environ les trois quarts des criées françaises : interlocuteur technique pour un export automatique, une fois l’accord du gestionnaire obtenu.'};
+function accessMail(name,info,kind){const st=S.settings;const who=(info&&info.resp)?info.resp.split(',')[0]:'Madame, Monsieur';
+ if(kind==='aucxis')return `Objet : Export automatique des données de vente – criée de ${name}\n\nBonjour,\n\nNous sommes acheteur / négociant en produits de la mer : ${st.raison||'[raison sociale]'} (SIRET ${st.siret||'[SIRET]'}).\n\nNous souhaitons recevoir automatiquement, pour la criée de ${name}, les données suivantes :\n- avant la vente : catalogue des apports (navires, espèces, calibres, qualités, quantités) ;\n- après la vente : résultats (prix moyens, mini, maxi, quantités vendues).\n\nFormat souhaité : API JSON (ou export CSV quotidien par e-mail / SFTP).\nNous sollicitons en parallèle l'accord du gestionnaire de la criée.\n\nPouvez-vous nous indiquer les modalités techniques et le coût de ce service ?\n\nCordialement,\n${st.raison||''}\n${st.tel||''} ${st.email||''}`;
+ return `Objet : Demande d'agrément acheteur et d'accès aux données de vente – ${name}\n\n${who==='Madame, Monsieur'?'Madame, Monsieur,':'Bonjour '+who+','}\n\nJe vous contacte au nom de ${st.raison||'[raison sociale]'}${st.forme?' ('+st.forme+')':''}, SIRET ${st.siret||'[SIRET]'}, basée à ${st.ville||'[ville]'}.\n\nNous souhaitons :\n1. être agréés comme acheteur, y compris à distance ;\n2. accéder de façon automatisée aux informations de vente de ${name} :\n   - avant la vente : apports annoncés (navires, espèces, calibres, volumes) ;\n   - après la vente : résultats (prix moyens, mini, maxi, quantités).\n\nFormat idéal : une API (JSON) ou, à défaut, un export CSV quotidien par e-mail.\n\nPourriez-vous m'indiquer la procédure, les pièces à fournir (Kbis, attestation d'assurance, garanties de paiement) et les éventuels frais ?\n\nJe reste disponible pour un échange téléphonique.\n\nCordialement,\n${st.raison||''}\n${st.tel||''}\n${st.email||''}`}
+function vAccess(){
+ const s=(sub.acs||'').toLowerCase();const f=sub.acf||'';
+ const rows=[...CRIEES.map(c=>({id:c.id,nom:c.nom,reg:c.region,dep:c.dep,kind:'Criée',base:CRIEE_INFO[c.id]||{}})),...PORTS.map(p=>({id:p.id,nom:p.nom,reg:'',dep:p.dep,kind:'Petit port',base:{g:p.g||'',t:p.t}}))].filter(r=>(!f||r.kind===f)&&(!s||(r.nom+r.reg+r.dep).toLowerCase().includes(s)));
+ const st=S.settings;const miss=!st.siret||!st.raison;
+ return back()+`<h2>Demandes d'accès</h2>${miss?'<div class="banner warn small">Renseignez la raison sociale et le SIRET (Entreprise) : ils sont insérés automatiquement dans chaque demande.</div>':''}
+ <div class="card"><h3>Comment ça marche</h3><ol class="steps"><li><b>Demande au gestionnaire</b><span class="small muted">Chaque criée est gérée par un organisme (CCI, port, société). Il délivre l'agrément acheteur et autorise l'accès aux données.</span></li><li><b>Demande à l'éditeur du logiciel</b><span class="small muted">${esc(AUCXIS.d)}</span></li><li><b>Branchement</b><span class="small muted">Avec l'URL et la clé reçues : Criées de France › la criée › Connexion API.</span></li></ol><button class="btn sec sm" data-act="copyaucxis">Copier la demande type à Aucxis</button> <a class="btn sec sm" href="${gsearch('Aucxis contact criée France')}" target="_blank" rel="noopener">Contact Aucxis</a></div>
+ <input placeholder="Rechercher une ville, un département…" value="${esc(sub.acs||'')}" data-input="acs" style="margin-bottom:8px">
+ <div class="pill-filter"><button data-act="acf" data-v="" class="${!f?'on':''}">Tout (${CRIEES.length+PORTS.length})</button><button data-act="acf" data-v="Criée" class="${f==='Criée'?'on':''}">Criées (${CRIEES.length})</button><button data-act="acf" data-v="Petit port" class="${f==='Petit port'?'on':''}">Petits ports (${PORTS.length})</button></div>
+ <div class="card list">${rows.map(r=>{const u=(S.criees[r.id]||{}).contact||{};const g=u.g||r.base.g||'';const tel=u.tel||r.base.tel||'';const email=u.email||r.base.email||'';const resp=u.resp||r.base.resp||'';const stt=(S.criees[r.id]||{}).status||'';
+  return `<div class="it" style="flex-wrap:wrap"><div class="grow"><div class="t">${esc(r.nom)} <span class="tag">${r.kind}</span> ${stt?`<span class="tag ${stt==='api'||stt==='agree'?'ok':'warn'}">${{demande:'Demande envoyée',agree:'Agréé',api:'API obtenue'}[stt]||''}</span>`:''}</div>
+  <div class="small muted">${esc(g||'Gestionnaire à identifier')}${r.base.ok&&!u.g?' ✓':''}</div>${resp?`<div class="small">${esc(resp)}</div>`:''}${r.base.t?`<div class="small muted">${esc(r.base.t)}</div>`:''}<div class="small">${tel?`☎ ${esc(tel)} `:''}${email?`✉ ${esc(email)}`:''}</div></div>
+  <div class="row" style="flex-basis:100%;margin-top:6px"><button class="btn sm" data-act="accopy" data-id="${r.id}">Copier la demande</button>${email?`<a class="btn sec sm" href="mailto:${esc(email)}?subject=${q('Demande d’agrément et d’accès aux données – '+r.nom)}&body=${q(accessMail(r.nom,{resp},''))}">Envoyer par e-mail</a>`:''}<button class="btn sec sm" data-act="acedit" data-id="${r.id}">${g&&tel?'Modifier':'Compléter'} le contact</button><a class="btn sec sm" href="${gsearch((r.kind==='Criée'?'criée halle à marée ':'port de pêche ')+r.nom+' contact')}" target="_blank" rel="noopener">Rechercher</a></div></div>`}).join('')||'<div class="empty">Aucun résultat.</div>'}</div>
+ <p class="tiny">✓ = gestionnaire confirmé par une source publique. Les coordonnées affichées sont celles publiées par les organismes ; complétez les autres au fil de vos échanges (elles restent dans votre appli).</p>`;
+}
+function acForm(id){const isP=id.startsWith('p_');const nm=isP?(PORTS.find(p=>p.id===id)||{}).nom:criee(id).nom;const base=isP?{g:(PORTS.find(p=>p.id===id)||{}).g}:(CRIEE_INFO[id]||{});const u=(S.criees[id]||{}).contact||{};const v=k=>u[k]!=null?u[k]:(base[k]||'');
+ return `<form data-form="acsave" data-id="${id}"><p class="small muted" style="margin-top:-6px">${esc(nm)}</p><div class="f"><label>Gestionnaire</label><input name="g" value="${esc(v('g'))}"></div><div class="f"><label>Responsable (nom, fonction)</label><input name="resp" value="${esc(v('resp'))}"></div><div class="grid2"><div class="f"><label>Téléphone</label><input name="tel" type="tel" value="${esc(v('tel'))}"></div><div class="f"><label>E-mail</label><input name="email" type="email" value="${esc(v('email'))}"></div></div><div class="f"><label>Statut</label><select name="status">${[['','Pas encore demandé'],['demande','Demande envoyée'],['agree','Agréé acheteur'],['api','API obtenue']].map(([a,b])=>opt(a,b,(S.criees[id]||{}).status||'')).join('')}</select></div><button class="btn block">Enregistrer</button></form>`}
+
+/* ---- Grandes tables : deux compartiments ---- */
+// chef vérifié (sources 2026 : Gault&Millau, Guide Michelin via presse) : v:1
+const RESTOS2=[
+ ['La Vague d’Or – Cheval Blanc Saint-Tropez','Arnaud Donckele','Saint-Tropez','Côte d’Azur & Monaco','mer',1,0],
+ ['Le Petit Nice – Passedat','Gérald Passedat','Marseille','Côte d’Azur & Monaco','mer',0,0],
+ ['Blue Bay – Monte-Carlo Bay','Marcel Ravin','Monaco','Côte d’Azur & Monaco','mer',1,0],
+ ['Elsa – Monte-Carlo Beach','Marcel Ravin','Monaco','Côte d’Azur & Monaco','mer',1,0],
+ ['L’Abysse Monte-Carlo','Yannick Alléno','Monaco','Côte d’Azur & Monaco','mer',1,0],
+ ['Le Louis XV – Alain Ducasse à l’Hôtel de Paris','Alain Ducasse (maison)','Monaco','Côte d’Azur & Monaco','palace',1,0],
+ ['Le Grill – Hôtel de Paris','Dominique Lory','Monaco','Côte d’Azur & Monaco','palace',1,0],
+ ['Pavyllon Monte-Carlo – Hôtel Hermitage','Yannick Alléno','Monaco','Côte d’Azur & Monaco','palace',1,0],
+ ['Les Ambassadeurs – Hôtel Métropole','Christophe Cussac','Monaco','Côte d’Azur & Monaco','palace',1,0],
+ ['Mirazur','Mauro Colagreco','Menton','Côte d’Azur & Monaco','mer',1,0],
+ ['Le Cap – Grand-Hôtel du Cap-Ferrat','Yoric Tièche','Saint-Jean-Cap-Ferrat','Côte d’Azur & Monaco','palace',1,0],
+ ['La Chèvre d’Or – Château de la Chèvre d’Or','Tom Meyer','Èze','Côte d’Azur & Monaco','palace',1,1],
+ ['Château Eza','Justin Schmitt','Èze','Côte d’Azur & Monaco','palace',1,0],
+ ['La Table du Cap Estel','Kévin Garcia (guide Michelin 2026)','Èze','Côte d’Azur & Monaco','mer',1,0],
+ ['Le Restaurant des Rois – La Réserve de Beaulieu','Julien Roucheteau','Beaulieu-sur-Mer','Côte d’Azur & Monaco','palace',1,0],
+ ['La Villa Archange','Bruno Oger','Le Cannet','Côte d’Azur & Monaco','mer',1,0],
+ ['La Passagère – Hôtel Belles Rives','','Juan-les-Pins','Côte d’Azur & Monaco','mer',0,0],
+ ['Les Pêcheurs – Cap d’Antibes Beach Hôtel','','Antibes','Côte d’Azur & Monaco','mer',0,0],
+ ['Flaveur','Gaël & Mickaël Tourteaux','Nice','Côte d’Azur & Monaco','mer',1,0],
+ ['Le Séran – Château d’Audrieu','Samuel Gaspar','Audrieu (Calvados)','Normandie','palace',1,1],
+ ['Anne de Bretagne','','La Plaine-sur-Mer','Pays de la Loire','mer',0,1],
+ ['Le Coquillage – Maisons de Bricourt','Hugo Roellinger','Saint-Méloir-des-Ondes','Bretagne','mer',0,1],
+ ['Domaine de Châteauvieux','Philippe Chevrier','Satigny (GE)','Suisse','palace',0,1],
+ ['Divellec','Mathieu Pacaud','Paris','Paris','mer',0,0],
+ ['Prunier','','Paris','Paris','mer',0,0],
+ ['Chez Fonfon','','Marseille','Côte d’Azur & Monaco','mer',0,0]
+].map(([nom,chef,ville,zone,seg,v,rc],i)=>({ref:'g'+i,nom,chef,ville,zone,seg,v,rc,type:seg==='mer'?'Grande table de la mer':'Palace / grand hôtel'}));
+const PALACE_KW=/palace|cheval blanc|bristol|meurice|plaza|ritz|crillon|george v|negresco|beau-rivage|dolder|four seasons|barrière|ferme saint|chenevi|domaine|château|hôtel/i;
+function allRestos(){const base=RESTOS.map(r=>({...r,seg:(r.type==='Palace'||PALACE_KW.test(r.nom)||r.type==='Hôtel-restaurant'||r.type==='Grand hôtel')?'palace':(r.type==='Produits de la mer'?'mer':'palace'),v:0,rc:/Maisons de Bricourt|Châteauvieux/.test(r.nom)?1:0}));
+ const names=new Set(RESTOS2.map(r=>r.nom.toLowerCase().split(' – ')[0]));return [...RESTOS2,...base.filter(r=>!names.has(r.nom.toLowerCase().split(' – ')[0]))].map(r=>{const e=(S.restoEdits||{})[r.ref]||{};return {...r,chef:e.chef!=null?e.chef:r.chef,v:e.chef!=null?1:r.v,own:e.chef!=null}})}
+
+/* ---- Contact ---- */
+function vContact(){const st=S.settings;
+ return `<h2>Nous contacter</h2><p class="small muted" style="margin-top:-6px">${esc(st.raison||st.appName)} – produits de la mer, criées de Normandie et de Bretagne.</p>
+ <form data-form="contactmsg" class="card"><div class="grid2"><div class="f"><label>Nom</label><input name="nom" required></div><div class="f"><label>Établissement</label><input name="etab" placeholder="Restaurant, hôtel, poissonnerie…"></div></div><div class="grid2"><div class="f"><label>Téléphone</label><input name="tel" type="tel"></div><div class="f"><label>E-mail</label><input name="email" type="email"></div></div><div class="f"><label>Objet</label><select name="objet">${['Demande de prix / mercuriale','Commande','Partenariat (pêcheur, port)','Autre'].map(x=>opt(x,x,'')).join('')}</select></div><div class="f"><label>Message</label><textarea name="msg" required></textarea></div><button class="btn block">Envoyer le message</button></form>
+ <div class="card"><h3>Ou directement</h3><div class="row">${st.tel?`<a class="btn sec sm" href="${waLink('Bonjour, ')}" target="_blank" rel="noopener">WhatsApp</a>`:''}${st.email?`<a class="btn sec sm" href="mailto:${esc(st.email)}">E-mail</a>`:''}</div><p class="small" style="margin:8px 0 0">${st.tel?'☎ '+esc(st.tel):''} ${st.email?'✉ '+esc(st.email):''}</p>${!st.tel&&!st.email?'<p class="small muted">Coordonnées à renseigner dans Admin › Entreprise.</p>':''}</div>
+ <p class="tiny">Vos coordonnées servent uniquement à vous répondre.</p>`}
+function vInbox(){const st=S.settings;const list=[...(S.inbox||[])].sort((a,b)=>b.at-a.at);if(list.some(m=>!m.read)){setTimeout(()=>{S.inbox.forEach(m=>m.read=true);save('inbox')},1500)}
+ return back()+`<h2>Messages reçus</h2>
+ <div class="card"><h3>Réception des messages</h3><p class="small" style="margin-top:0">Le formulaire « Nous contacter » envoie chaque message :</p><ul class="small" style="margin:0 0 8px;padding-left:18px"><li>dans votre boîte e-mail, via un service de formulaire en ligne (par exemple Formspree, gratuit au départ) : collez ci-dessous l'adresse fournie par ce service ;</li><li>ici, dans cette liste, pour les messages saisis sur cet appareil ou synchronisés ;</li><li>sinon, le visiteur peut l'envoyer par WhatsApp ou e-mail à vos coordonnées.</li></ul>
+ <form data-form="formep" class="row"><input name="formEndpoint" type="url" value="${esc(st.formEndpoint||'')}" placeholder="https://formspree.io/f/…" class="grow"><button class="btn sm">Enregistrer</button></form>${st.formEndpoint?'<p class="small up" style="margin:6px 0 0">Formulaire en ligne actif.</p>':'<p class="small muted" style="margin:6px 0 0">Pas encore de formulaire en ligne : les visiteurs passent par WhatsApp ou e-mail.</p>'}</div>
+ <div class="card list">${list.length?list.map(m=>`<div class="it" style="flex-wrap:wrap"><div class="grow"><div class="t">${esc(m.nom)} ${m.etab?'· '+esc(m.etab):''} ${m.read?'':'<span class="tag acc">Nouveau</span>'}</div><div class="small muted">${frDT(m.at)} · ${esc(m.objet)}${m.tel?' · '+esc(m.tel):''}${m.email?' · '+esc(m.email):''}</div><p class="small" style="margin:6px 0 0;white-space:pre-wrap">${esc(m.msg)}</p></div><div class="row" style="flex-basis:100%;margin-top:6px">${m.tel?`<a class="btn sec sm" href="${waLink('Bonjour '+m.nom+', ',m.tel)}" target="_blank" rel="noopener">Répondre WhatsApp</a>`:''}${m.email?`<a class="btn sec sm" href="mailto:${esc(m.email)}?subject=${q('Re : '+m.objet)}">Répondre e-mail</a>`:''}<button class="btn sec sm" data-act="msg2prospect" data-id="${m.id}">Ajouter au démarchage</button><button class="btn danger sm" data-act="delmsg" data-id="${m.id}">×</button></div></div>`).join(''):'<div class="empty"><b>Aucun message</b>Les messages du formulaire apparaîtront ici.</div>'}</div>`}
+function syncInfo(){const cloud=MODE==='cloud';
+ openModal('Synchronisation',`<div class="kv"><span>Mode</span><b class="${cloud?'up':''}">${cloud?'Synchronisé (compte Claude)':'Local (cet appareil)'}</b></div><div class="kv"><span>Dernière synchronisation</span><b>${window.__lastSync?frDT(window.__lastSync):'—'}</b></div>
+ <p class="small">${cloud?'Vos données sont enregistrées sur votre compte et partagées entre vos appareils connectés au même compte Claude.':'Dans la version installée (GitHub), les données sont enregistrées sur ce téléphone. Pour les copier sur un autre téléphone : Exporter ici, puis Restaurer là-bas.'}</p>
+ <div class="row">${cloud?'<button class="btn sm" data-act="syncnow">Synchroniser maintenant</button>':''}<button class="btn sec sm" data-act="syncexport">Exporter mes données</button><button class="btn sec sm" data-act="syncrestore">Restaurer</button></div>`)}
+
 /* ============ Modale ============ */
 function openModal(title,html){setTimeout(hydratePhotos,30);$('#modal-root').innerHTML=`<div class="modal-bg" data-act="closemodal-bg"><div class="modal"><h2>${esc(title)}<button class="x" data-act="closemodal">×</button></h2>${html}</div></div>`}
 function closeModal(){$('#modal-root').innerHTML=''}
@@ -1538,7 +1739,7 @@ const A={
  editclient:e=>{const c=S.clients.find(x=>x.id===e.dataset.id)||{};openModal(c.id?c.nom:'Nouveau client',clientForm(c))},
  delclient:e=>{if(S.orders.some(o=>o.clientId===e.dataset.id)||S.docs.some(d=>d.clientId===e.dataset.id)){toast('Client lié à des commandes ou factures : suppression impossible');return}S.clients=S.clients.filter(c=>c.id!==e.dataset.id);save('clients');closeModal();render()},
  ptab:e=>{sub.ptab=e.dataset.v;render()},zone:e=>{sub.zone=e.dataset.v;render()},pst:e=>{sub.pst=e.dataset.v;render()},
- addprospect:e=>{const r=RESTOS.find(x=>x.ref===e.dataset.id);S.prospects.push({id:uid(),ref:r.ref,nom:r.nom,chef:r.chef==='—'?'':r.chef,ville:r.ville,zone:r.zone,statut:'à contacter',relance:todayISO(),notes:''});save('prospects');toast('Ajouté au démarchage');render()},
+ addprospect:e=>{const r=allRestos().find(x=>x.ref===e.dataset.id);S.prospects.push({id:uid(),ref:r.ref,nom:r.nom,chef:(r.chef==='—'?'':r.chef),ville:r.ville,zone:r.zone,statut:'à contacter',relance:todayISO(),notes:''});save('prospects');toast('Ajouté au démarchage');render()},
  editprospect:e=>{const p=S.prospects.find(x=>x.id===e.dataset.id)||{};openModal(p.id?p.nom:'Nouveau prospect',prospectForm(p))},
  delprospect:e=>{S.prospects=S.prospects.filter(p=>p.id!==e.dataset.id);save('prospects');closeModal();render()},
  toclient:e=>{const p=S.prospects.find(x=>x.id===e.dataset.id);const c={id:uid(),nom:p.nom,type:/palace|hôtel/i.test(p.nom)?'Palace / hôtel':'Restaurant',contact:p.chef,email:p.email,tel:p.tel,ville:p.ville,notes:p.notes,createdAt:Date.now()};S.clients.push(c);p.statut='gagné';save('clients');save('prospects');closeModal();toast('Client créé');render()},
@@ -1567,7 +1768,7 @@ const A={
  saveshipparams:()=>{const p=readShip();for(const k of ['fuelPrice','conso','speed','peageKm','autorouteShare','driverRate','frigoH','vehicleKm','loadMin'])S.settings[k]=num(p[k]);S.settings.origin=p.from;save('settings');toast('Paramètres enregistrés')},
  shiptoorder:()=>{const p=readShip();const r=transportCalc(p);const o=S.orders.find(x=>x.id===$('#shipOrder').value);if(!o)return;o.dest=p.to;o.km=p.km;o.ar=p.ar;o.transport={km:r.km,hours:r.hours,total:r.total};o.eta=etaFor(o);save('orders');toast('Transport affecté à '+o.num)},
  delcarrier:e=>{S.carriers=S.carriers.filter(c=>c.id!==e.dataset.id);save('carriers');render()},
- conso2china:e=>{const c=CONSO.find(x=>x.id===e.dataset.id);const pr=S.consoPrices[c.id]||{};const p=Object.assign(defImport(),S.imports[0]||{});p.article=c.nom;p.euPrice=pr.eu||'';if(pr.cn){p.unit=pr.cn;p.cur='EUR'}S.imports[0]=p;save('imports');sub.ctab='calc';location.hash='#adm-chine'},
+ conso2china:e=>{const c=CONSO2.find(x=>x.id===e.dataset.id);if(!c)return;const pr=S.consoPrices[c.id]||{};const p=Object.assign(defImport(),S.imports[0]||{});p.article=c.nom;p.euPrice=pr.eu||mid(c.fr)||'';p.unit=pr.cn||mid(c.cn)||'';p.cur='EUR';p.qty=c.big?1:100;S.imports[0]=p;save('imports');sub.ctab='calc';location.hash='#adm-chine'},
  ctab:e=>{sub.ctab=e.dataset.v;render();window.scrollTo(0,0)},
  addquote:()=>{const p=readChina();p.quotes.push({name:'',port:'',cost:'',days:''});S.imports[0]=p;save('imports');render()},
  deldisr:e=>{S.disruptions=S.disruptions.filter(d=>d.id!==e.dataset.id);save('disruptions');render()},
@@ -1586,7 +1787,22 @@ const A={
  goconso:e=>{closeModal();const go=()=>{const el=document.getElementById('part-'+e.dataset.id);el&&el.scrollIntoView({behavior:'smooth'})};if(location.hash==='#adm-consommables')go();else{location.hash='#adm-consommables';setTimeout(go,150)}},
  spalert:e=>{closeModal();sub.alertSp=e.dataset.v;if(location.hash==='#alertes')render();else location.hash='#alertes'},
  spcal:e=>{closeModal();sub.calAll=true;const go=()=>{const el=document.getElementById('sp-'+e.dataset.v.replace(/[^a-zA-Z]/g,''));el&&el.scrollIntoView({behavior:'smooth'})};if(location.hash==='#adm-calendrier'){render();go()}else{location.hash='#adm-calendrier';setTimeout(go,150)}},
- scrollto:e=>{const el=document.getElementById(e.dataset.id);el&&el.scrollIntoView({behavior:'smooth'})},
+ scrollto:e=>{const el=document.getElementById(e.dataset.id);if(!el)return;el.scrollIntoView({behavior:'smooth',block:'start'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1400)},
+ syncinfo:()=>syncInfo(),
+ syncnow:async()=>{if(!DB){toast('Mode local');return}for(const k of KEYS)await flush(k);toast('Synchronisé');closeModal();syncInfo()},
+ syncexport:()=>{closeModal();A.exportfile()},syncrestore:()=>{closeModal();A.importjson()},
+ copyaucxis:()=>copyText(accessMail('[nom de la criée]',{},'aucxis')),
+ accopy:e=>{const id=e.dataset.id;const isP=id.startsWith('p_');const nm=isP?PORTS.find(p=>p.id===id).nom:criee(id).nom;const u=(S.criees[id]||{}).contact||{};const base=isP?{}:(CRIEE_INFO[id]||{});copyText(accessMail(nm,{resp:u.resp||base.resp},''));const c=S.criees[id]=S.criees[id]||{};if(!c.status){c.status='demande';save('criees')}},
+ acedit:e=>{const id=e.dataset.id;openModal('Contact',acForm(id))},
+ acf:e=>{sub.acf=e.dataset.v;render()},rseg:e=>{sub.rseg=e.dataset.v;sub.zone='';render()},
+ editchef:e=>{const r=allRestos().find(x=>x.ref===e.dataset.id);openModal('Chef – '+r.nom,`<form data-form="chef" data-id="${r.ref}"><div class="f"><label>Nom du chef</label><input name="chef" value="${esc(r.chef||'')}" required></div><p class="tiny">Vérifiez sur le site de l'établissement ou le guide. Ce nom est enregistré dans votre appli.</p><button class="btn block">Enregistrer</button></form>`)},
+ mapport:e=>{const pt=PORTS.find(x=>x.id===e.dataset.id);openModal(pt.nom,`<p class="small" style="margin-top:-6px">${esc(pt.t)}</p>${pt.g?`<div class="kv"><span>Gestionnaire</span><b>${esc(pt.g)}</b></div>`:''}<div class="row" style="margin-top:10px"><a class="btn sec sm" href="${gsearch('port de pêche '+pt.nom+' vente directe pêcheurs')}" target="_blank" rel="noopener">En savoir plus</a>${ADMIN?`<button class="btn sm" data-act="goaccess">Demandes d'accès</button>`:''}</div>`)},
+ goaccess:()=>{closeModal();sub.acf='Petit port';location.hash='#adm-acces'},
+ delmsg:e=>{S.inbox=S.inbox.filter(m=>m.id!==e.dataset.id);save('inbox');render()},
+ msg2prospect:e=>{const m=S.inbox.find(x=>x.id===e.dataset.id);S.prospects.push({id:uid(),nom:m.etab||m.nom,chef:m.nom,email:m.email,tel:m.tel,statut:'contacté',relance:todayISO(),notes:m.msg});m.read=true;save('prospects');save('inbox');toast('Ajouté au démarchage');render()},
+ ctype:e=>{sub.ctype=e.dataset.v;render();scrollTo(0,0)},
+ wsc:e=>{sub.wsc=e.dataset.v;render()},wsk:e=>{sub.wsk=e.dataset.v;render()},
+ consosup:e=>{sub.wsk=SUP_CATS[CONSO_CAT[e.dataset.id]]||'';sub.wsc='';sub.ctype='fourn';render();scrollTo(0,0)},
  seatab:e=>{sub.seaTab=e.dataset.v;render()},seam:e=>{sub.seaM=+e.dataset.v;render()},idcat:e=>{sub.idCat=e.dataset.v;render()},
  spfillet:e=>{closeModal();sub.fsp=e.dataset.v;sub.fy=null;sub.fbuy=null;location.hash='#adm-filetage'},
  spmarket:e=>{closeModal();sub.msp=(allTracked().find(x=>kw(x)===kw(e.dataset.v)))||e.dataset.v;sub.mtab='cours';location.hash='#adm-marche'},
@@ -1665,6 +1881,14 @@ const FORMS={
  task:(f,fd)=>{S.tasks.push({id:uid(),title:fd.get('title'),date:fd.get('date'),time:fd.get('time'),type:fd.get('type'),done:false});save('tasks');render()},
  merchead:(f,fd)=>{S.merc.week=fd.get('week');S.merc.note=fd.get('note');S.settings.mercCoef=num(fd.get('coef'))||1.6;save('merc');save('settings');toast('Enregistré');render()},
  contact:(f,fd)=>{const id=f.dataset.id;let c=S.contacts.find(x=>x.id===id);if(!c){c={id:uid()};S.contacts.push(c)}for(const k of ['nom','bateau','port','tel','email','notes'])c[k]=fd.get(k);c.ok=!!f.querySelector('[name=ok]').checked;save('contacts');closeModal();render()},
+ acsave:(f,fd)=>{const id=f.dataset.id;const c=S.criees[id]=S.criees[id]||{};c.contact={g:fd.get('g'),resp:fd.get('resp'),tel:fd.get('tel'),email:fd.get('email')};c.status=fd.get('status');save('criees');closeModal();toast('Contact enregistré');render()},
+ chef:(f,fd)=>{S.restoEdits=S.restoEdits||{};S.restoEdits[f.dataset.id]={chef:fd.get('chef').trim()};save('restoEdits');closeModal();toast('Chef enregistré');render()},
+ formep:(f,fd)=>{S.settings.formEndpoint=(fd.get('formEndpoint')||'').trim();save('settings');toast('Enregistré');render()},
+ contactmsg:async(f,fd)=>{const m={id:uid(),at:Date.now(),nom:fd.get('nom'),etab:fd.get('etab'),tel:fd.get('tel'),email:fd.get('email'),objet:fd.get('objet'),msg:fd.get('msg'),read:false};let sent=false;
+  if(S.settings.formEndpoint){try{const r=await fetch(S.settings.formEndpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({nom:m.nom,etablissement:m.etab,telephone:m.tel,email:m.email,objet:m.objet,message:m.msg})});sent=r.ok}catch(e){}}
+  S.inbox=S.inbox||[];S.inbox.push(m);save('inbox');
+  const txt=`${m.objet}\n${m.nom}${m.etab?' – '+m.etab:''}\n${m.tel||''} ${m.email||''}\n\n${m.msg}`;const st=S.settings;
+  $('#app').innerHTML=`<h2>Merci ${esc(m.nom)}</h2><div class="card">${sent?'<p>Votre message a bien été envoyé. Nous vous recontactons rapidement.</p>':`<p style="margin-top:0">Pour être sûr qu'il nous parvienne, envoyez-le aussi en un clic :</p><div class="row">${st.tel?`<a class="btn sm" href="${waLink(txt)}" target="_blank" rel="noopener">Envoyer par WhatsApp</a>`:''}${st.email?`<a class="btn sec sm" href="mailto:${esc(st.email)}?subject=${q(m.objet)}&body=${q(txt)}">Envoyer par e-mail</a>`:''}</div>${!st.tel&&!st.email?'<p class="small muted">Message enregistré.</p>':''}`}</div><a class="btn sec" href="#accueil">Retour à l'accueil</a>`},
  noop:()=>{}
 };
 async function readImage(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>{if(file.type==='image/svg+xml'){res(fr.result);return}const img=new Image();img.onload=()=>{const s=256,c=document.createElement('canvas');const k=Math.min(s/img.width,s/img.height,1);c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext('2d').drawImage(img,0,0,c.width,c.height);res(c.toDataURL('image/png'))};img.onerror=rej;img.src=fr.result};fr.onerror=rej;fr.readAsDataURL(file)})}
@@ -1703,7 +1927,7 @@ document.addEventListener('input',ev=>{const el=ev.target;
 });
 window.addEventListener('hashchange',()=>{if(location.hash!=='#adm-criees')sub.crieeDetail=null;closeModal();render();window.scrollTo(0,0)});
 if('serviceWorker' in navigator&&location.protocol==='https:'&&!location.hostname.includes('claude')){try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}}
-document.addEventListener('error',ev=>{const t=ev.target;if(t&&t.tagName==='IMG'&&t.dataset.fbsil){const s=document.createElement('span');s.className='sil';s.innerHTML=SIL[t.dataset.fbsil]||'';t.replaceWith(s);return}if(t&&t.tagName==='IMG'&&t.dataset.fb&&ILLUS[t.dataset.fb]){const d=document.createElement('div');d.style.cssText='width:72%;height:72%';d.innerHTML=ILLUS[t.dataset.fb];t.replaceWith(d)}},true);
+document.addEventListener('error',ev=>{const t=ev.target;if(t&&t.tagName==='IMG'&&t.dataset.fbkey){const k=t.dataset.fbkey;const s=document.createElement('span');s.className='sil';s.innerHTML=k.startsWith('c:')?(ILLUS[(CONSO2.find(x=>'c:'+x.id===k)||{}).il]||''):(SIL[spCat(k)]||'');t.replaceWith(s);return}if(t&&t.tagName==='IMG'&&t.dataset.fbsil){const s=document.createElement('span');s.className='sil';s.innerHTML=SIL[t.dataset.fbsil]||'';t.replaceWith(s);return}if(t&&t.tagName==='IMG'&&t.dataset.fb&&ILLUS[t.dataset.fb]){const d=document.createElement('div');d.style.cssText='width:72%;height:72%';d.innerHTML=ILLUS[t.dataset.fb];t.replaceWith(d)}},true);
 try{const shell=LOGO_SVG.match(/<path d="([^"]+)" fill="url\(#lg\)"/)[1];document.body.style.setProperty('--shells',`url("data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><g fill="none" stroke="#D4AF5A" stroke-width="1"><path transform="translate(4 4) scale(.8)" d="'+shell+'"/><path transform="translate(64 62) scale(.7)" d="'+shell+'"/></g><path d="M0 100 q15 -6 30 0 t30 0 t30 0 t30 0" fill="none" stroke="#14B88A" stroke-width=".8"/></svg>')}")`)}catch(e){}
 render();initStore();
 </script>
